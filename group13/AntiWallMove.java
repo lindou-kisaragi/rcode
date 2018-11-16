@@ -12,6 +12,11 @@ import robocode.util.Utils;
 import java.lang.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  * AntiWallMove - a class by (your name here)
  */
@@ -51,8 +56,19 @@ public class AntiWallMove
     protected  double BULLET_WEIGHT          = DEFAULT_BULLET_WEIGHT;
     protected  double BULLET_DIM = DEFAULT_BULLET_DIM;
 
-    public void execute(AdvancedRobot robot){
+	public  Map<String, Enemy> enemyMap = new HashMap<>(); 
+
+    public TeamRobot robot;
+    
+    public AntiWallMove( TeamRobot _roobot,
+         Map<String, Enemy> eMap ){
+            robot = _roobot;
+            enemyMap = eMap;
+    }
+
+    public void execute(){
         //set系を使う
+
     }
 
     public void move(MyRobot my, Enemy enemy){
@@ -61,6 +77,12 @@ public class AntiWallMove
 
     public void calcFire(Enemy enemy, MyRobot my){
         
+    }
+
+    public void log() {
+        for(Map.Entry<String, Enemy> entry : enemyMap.entrySet()){
+            System.out.println(entry.getKey() + " (awMove): " + entry.getValue());
+        }
     }
 
     //set destination selected by antigravity 

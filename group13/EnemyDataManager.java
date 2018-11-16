@@ -22,8 +22,12 @@ import java.util.Map;
  */
 public class EnemyDataManager
 {
-    public  Map<String, Enemy> enemyMap = new HashMap<>(); ;
+    private  Map<String, Enemy> enemyMap = new HashMap<>(); 
     
+   public  EnemyDataManager(Map<String, Enemy> eMap){
+       enemyMap = eMap;
+   }
+
     /*protected void createMap(){
         enemyMap = new HashMap<>();
     }*/
@@ -32,7 +36,7 @@ public class EnemyDataManager
         double lastScanTick = enemy.time;
         Enemy prevEnemy = enemyMap.get(enemy.name);
 
-        if ( prevEnemy == null )  { // Tbhe first time
+        if ( prevEnemy == null )  { // The first time
             if ( enemy.energy > 120 ) {
                 enemy.role = Enemy.ROLE_LEADER;
             }else if ( enemy.energy > 100 ) {

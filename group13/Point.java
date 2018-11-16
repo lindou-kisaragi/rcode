@@ -2,11 +2,11 @@ package group13;
 
 import group13.Util;
 import java.lang.*;
+import java.io.Serializable;
 
-public class Point
-{
+public class Point implements Serializable{
     public double x,y;
-
+    
     //defalt constractor
     public Point(){
     }

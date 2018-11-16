@@ -29,13 +29,11 @@ import java.util.Map;
  */
 public class G13_Leader extends TeamRobot
 {
-	private AntiWall aw = new AntiWall();
-	//private AntiWallMove awMove = AntiWallMove();
-	private MyRobot my = new MyRobot();
 
-	//private TeamDataManager teamDataManager = new TeamDataManager();
-	private EnemyDataManager  enemyDataManager= new EnemyDataManager();
 	private Enemy enemy;
+	public  Map<String, Enemy> enemyMap = new HashMap<>(); 
+	private EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
+	//private TeamDataManager teamDataManager = new TeamDataManager();
 
   	public double radarTurnAmount;
     public double gunTurnAmount;
@@ -43,8 +41,11 @@ public class G13_Leader extends TeamRobot
 	public boolean lockOn;
 	double t;
 	public boolean islastshot = false;
+	private MyRobot my = new MyRobot();
 	
-
+	private AntiWall aw = new AntiWall(this, my);
+	private AntiWallMove awMove = new AntiWallMove(this,enemyMap);
+ 
 	public void run() {
 		// Initialization of the robot should be put here
 		initRound();
@@ -61,10 +62,11 @@ public class G13_Leader extends TeamRobot
 		}
 		  lockOn = false;
 
-		updateMyInfo();
-		  //aw.execute();
-		  setTurnRadarRight(radarTurnAmount);
-		  setTurnGunRight(gunTurnAmount);
+		  updateMyInfo();
+		  awMove.log();	
+
+		  aw.execute();
+
 		  System.out.println("time:" + getTime());
 
 		  setMaxVelocity(8);
@@ -77,25 +79,25 @@ public class G13_Leader extends TeamRobot
 
 		if(!isTeammate(e.getName()) ){
 			enemy = new Enemy(my, e); 
+        	Enemy prevEnemy = enemyDataManager.get(enemy.name);
+			lockOn = true;
 
-        Enemy prevEnemy = enemyDataManager.get(enemy.name);
-		lockOn = true;
+			//antiWall !!
+			if(e.getName().contains("Wall")){
+			aw.onScannedRobot(enemy);
+			//radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading+ enemy.bearing - getRadarHeading());
+			//gunTurnAmount = aw.prepareFire(my,enemy);
 
-		if(e.getName().contains("Wall")){
-		radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading+ enemy.bearing - getRadarHeading());
-		gunTurnAmount = aw.prepareFire(my,enemy);
+				islastshot = Util.isLastShot(3,enemy.energy);
+				//if(!aw.holdFire)setFire(3);
+			}
 
-		islastshot = Util.isLastShot(3,enemy.energy);
-		if(!aw.holdFire)setFire(3);
-		 
-		//System.out.println("last:" + Util.isLastShot(3,enemy.energy));
-		setTurnRight(e.getBearing()); 
-		setAhead(e.getDistance() - 200);
+			setTurnRight(e.getBearing()); 
+			setAhead(e.getDistance() - 200);
+			enemyDataManager.ScannedRobot(enemy); //update enemy's info
+			enemyDataManager.log();
 		}
 
-		enemyDataManager.ScannedRobot(enemy); //update enemy's info
-		enemyDataManager.log();
-		}
 		/*System.out.println(getTime() + "/" +
 		                   " name :" + enemy.name+
 						   " position :" + enemy.x + "," + enemy.y +
@@ -119,6 +121,7 @@ public class G13_Leader extends TeamRobot
 		my.heading = getHeading();
 		my.headingRadians = getHeadingRadians();
 		my.gunHeading = getGunHeading();
+		my.radarHeading = getRadarHeading();
 		my.velocity = getVelocity();
 		my.energy = getEnergy();
 		my.heat = getGunHeat();
@@ -136,6 +139,17 @@ public class G13_Leader extends TeamRobot
 
 	public void onRobotDeath(RobotDeathEvent e){
 		enemyDataManager.onRobotDeath(e);
+	}
+
+	public void onMessageReceived(MessageEvent e){
+		Serializable message = e.getMessage();
+
+		if(message instanceof Enemy ){
+			Enemy enemy = (Enemy)message;
+			enemyDataManager.ScannedRobot(enemy); 
+		}else if(message instanceof MyRobot){
+
+		}
 	}
 
 	// Paint a transparent square on top of the last scanned robot

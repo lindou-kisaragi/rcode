@@ -31,9 +31,11 @@ public class G13_Sub2 extends TeamRobot
 	/**
 	 * run: G13_Sub2's default behavior
 	 */
-	private EnemyDataManager  enemyDataManager= new EnemyDataManager();
-	private double radarTurnAmount;
 	private Enemy enemy;
+	public  Map<String, Enemy> enemyMap = new HashMap<>(); 
+	private EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
+
+	private double radarTurnAmount;
 	private MyRobot my = new MyRobot();
 
     public void run() {

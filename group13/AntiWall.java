@@ -28,18 +28,34 @@ public class AntiWall
     private static final int WALL_MOVETYPE_ACCELE = 2;
 
     private  double t;
-    public static boolean holdFire;
-    public static int NextCorner;
+    public  boolean holdFire;
+    public  int NextCorner;
     //next corner that wall bot will reach 
     //0:(0,0) 1:() 2:() 3()
 
+    private boolean lockOn;
   	private double radarTurnAmount;
     private double gunTurnAmount;
 
-    public void execute(){
+    public AntiWall(TeamRobot _robot, MyRobot _my){
+        robot = _robot;
+        my =_my;
+    }
 
+    public void execute(){
+        if(!lockOn){
+			radarTurnAmount = 90;
+		}
+		  lockOn = false;
         robot.setTurnRadarRight(radarTurnAmount);
         robot.setTurnGunRight(gunTurnAmount);
+    }
+
+    public void onScannedRobot(Enemy enemy){
+        lockOn = true;
+        radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading+ enemy.bearing - my.radarHeading);
+        gunTurnAmount = prepareFire(my,enemy);
+        if(!holdFire)robot.setFire(3);
     }
 
     //This is CORE method!!!

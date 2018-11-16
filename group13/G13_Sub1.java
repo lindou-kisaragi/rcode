@@ -31,10 +31,15 @@ public class G13_Sub1 extends TeamRobot
 	/**
 	 * run: G13_Sub1's default behavior
 	 */
-	private EnemyDataManager  enemyDataManager= new EnemyDataManager();
+	//public Enemy enemy;
+	public  Map<String, Enemy> enemyMap = new HashMap<>(); 
+	private EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
+
 	private double radarTurnAmount;
-	private Enemy enemy;
 	private MyRobot my = new MyRobot();
+
+	private AntiWall aw = new AntiWall(this, my);
+	private AntiWallMove awMove = new AntiWallMove(this,enemyMap);
 
     public void run() {
         setAdjustGunForRobotTurn(true);
@@ -43,17 +48,35 @@ public class G13_Sub1 extends TeamRobot
         while(true) {
 
 		updateMyInfo();
-            radarTurnAmount = 90;
-            setTurnRadarRight(radarTurnAmount);
+			aw.execute();
+			
             execute();
     }
 	
 }
 	public void onScannedRobot(ScannedRobotEvent e) {
+		updateMyInfo();
+
 		if(!isTeammate(e.getName()) ){
-		enemy = new Enemy(my, e); 
+		Enemy enemy = new Enemy(my, e); 
+
+		if(e.getName().contains("Wall")){
+			aw.onScannedRobot(enemy);
+	
+		}
+
 		enemyDataManager.ScannedRobot(enemy); //update enemy's info
 		enemyDataManager.log();
+		setTurnRight(e.getBearing()); 
+		setAhead(e.getDistance() - 200);
+
+		try {
+		 broadcastMessage(enemy);
+		 System.out.println("MESSAGE DISPATCHED");
+		} catch (IOException ex) {
+			//TODO: handle exception
+		}
+
 		}
 	}
 	
@@ -63,6 +86,8 @@ public class G13_Sub1 extends TeamRobot
 		my.heading = getHeading();
 		my.headingRadians = getHeadingRadians();
 		my.gunHeading = getGunHeading();
+		my.radarHeading = getRadarHeading();
+
 		my.velocity = getVelocity();
 		my.energy = getEnergy();
 		my.heat = getGunHeat();
@@ -82,4 +107,5 @@ public class G13_Sub1 extends TeamRobot
 		// Replace the next line with any behavior you would like
 		back(20);
 	}	
+
 }
