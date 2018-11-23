@@ -25,27 +25,18 @@ import java.util.Map;
 // API help : http://robocode.sourceforge.net/docs/robocode/robocode/Robot.html
 
 /**
- * G13_Leader - a robot by group13
+ * BaseRobot 
  */
-public class G13_Leader extends TeamRobot
+public class BaseRobot extends TeamRobot
 {
-	private Enemy enemy;
+	public Enemy enemy;
 	public  Map<String, Enemy> enemyMap = new HashMap<>(); 
-	private EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
+	public EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
 	public Map<String, MyRobot> mateMap = new HashMap<>();
 	//private TeamDataManager teamDataManager = new TeamDataManager();
 
-  	public double radarTurnAmount;
-    public double gunTurnAmount;
-
-	public boolean lockOn;
-	double t;
-	public boolean islastshot = false;
 	public MyRobot my = new MyRobot();
 	
-	private AntiWall aw = new AntiWall(this, my);
-	public AntiWallMove awMove = new AntiWallMove(this,my,enemyMap,mateMap);
- 
 	public void run() {
 		// Initialization of the robot should be put here
 		initRound();
@@ -53,27 +44,7 @@ public class G13_Leader extends TeamRobot
 		// setColors(Color.red,Color.blue,Color.green); // body,gun,radar
 		setAdjustGunForRobotTurn(true);
 		setAdjustRadarForGunTurn(true);
-		//setAdjustRadarForRobotTurn(true);
-	
-		// Robot main loop
-		while(true) {
-		if(!lockOn){
-			radarTurnAmount = 90;
-		}
-		  lockOn = false;
-
-		  updateMyInfo();
-
-		  awMove.execute();
-		  awMove.log();	
-
-		  aw.execute();
-
-		  System.out.println("time:" + getTime());
-
-		  setMaxVelocity(8);
-		  execute();
-		}
+		setAdjustRadarForRobotTurn(true);
 	}
 
 	public void onScannedRobot(ScannedRobotEvent e) {
@@ -81,29 +52,20 @@ public class G13_Leader extends TeamRobot
 
 		if(!isTeammate(e.getName()) ){
 			enemy = new Enemy(my, e); 
-
-			//Enemy prevEnemy = enemyDataManager.get(enemy.name);
+			System.out.println("pupupu");
 			Enemy prevEnemy = enemyMap.get(enemy.name);
-			
-			lockOn = true;
-
-			enemyDataManager.ScannedRobot(enemy); //update enemy's info
-			//enemyDataManager.log();
-
-			//antiWall !!
-			if(e.getName().contains("Wall")){
-				aw.onScannedRobot(enemy);
-				awMove.setTarget(enemy.name);
-				islastshot = Util.isLastShot(3,enemy.energy);
-				//if(!aw.holdFire)setFire(3);
-			}
+            enemyDataManager.ScannedRobot(enemy); //update enemy's info
+            broadcastMessage(enemy);
 		}
-
 	}
 
 	public void  initRound(){
-		my.role = Enemy.ROLE_LEADER;
 		my.name = getName();
+        if(my.name.contains("Leader")){
+            my.role = RobotInfo.ROLE_LEADER;
+        }else{
+            my.role = RobotInfo.ROLE_ROBOT;
+        }
 
 		String[] teammates = getTeammates();
 		if (teammates != null){
@@ -126,7 +88,8 @@ public class G13_Leader extends TeamRobot
 		my.radarHeading = getRadarHeading();
 		my.velocity = getVelocity();
 		my.energy = getEnergy();
-		my.heat = getGunHeat();
+        my.heat = getGunHeat();
+        broadcastMessage(my);
 	}
 	
 	public void onHitByBullet(HitByBulletEvent e) {
@@ -152,29 +115,35 @@ public class G13_Leader extends TeamRobot
 		}else if(message instanceof MyRobot){
 			MyRobot mate = (MyRobot)message;
 			mateMap.put(mate.name ,mate);
-			//System.out.println("mate.time: " + mate.time + "my.time" +my.time);
 		}
+    }
+    
+    @Override
+    public void broadcastMessage(Serializable s ){
+        try {
+            super.broadcastMessage(s);
+        } catch (IOException ex) {
+
+        }
 	}
 
 	// Paint a transparent square on top of the last scanned robot
     public void onPaint(Graphics2D g) {
 		try {
-			aw.onPaint(g,my,enemy);		
-			awMove.onPaint(g, my, enemy);
 			enemyDataManager.onPaint(g);
 		} catch (RuntimeException e) {
 			//TODO: handle exception
 		}
 		
-    g.setColor(Color.red);
-	g.drawLine((int)getX(), (int)getY(), 
-	(int)(Math.sin(getGunHeadingRadians()) * 800 + getX()),(int)(Math.cos(getGunHeadingRadians()) * 800 + getY())
-	);
+        g.setColor(Color.red);
+	    g.drawLine((int)getX(), (int)getY(), 
+	    (int)(Math.sin(getGunHeadingRadians()) * 800 + getX()),(int)(Math.cos(getGunHeadingRadians()) * 800 + getY())
+	    );
 
-	g.setColor(Color.blue);
-	g.drawLine((int)getX(), (int)getY(), 
-	(int)(Math.sin(getHeadingRadians()) * 800 + getX()),(int)(Math.cos(getHeadingRadians()) * 800 + getY())
-	);
+	    g.setColor(Color.blue);
+	    g.drawLine((int)getX(), (int)getY(), 
+	    (int)(Math.sin(getHeadingRadians()) * 800 + getX()),(int)(Math.cos(getHeadingRadians()) * 800 + getY())
+	    );
 
 	}
 }

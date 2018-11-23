@@ -1,9 +1,11 @@
 package group13;
 
+import group13.BaseRobot;
 import group13.RobotInfo;
 import group13.MyRobot;
 import group13.Enemy;
 import group13.EnemyDataManager;
+import group13.Move;
 import group13.AntiWall;
 import group13.AntiWallMove;
 import group13.Util;
@@ -26,60 +28,70 @@ import java.util.Map;
 /**
  * G13_Sub2 - a robot by (your name here)
  */
-public class G13_Sub2 extends TeamRobot
+public class G13_Sub2 extends BaseRobot
 {
-	/**
-	 * run: G13_Sub2's default behavior
-	 */
-	private Enemy enemy;
-	public  Map<String, Enemy> enemyMap = new HashMap<>(); 
-	private EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
-
+	/*super class's variable you can use*/
+	//public Enemy enemy;
+	//public  Map<String, Enemy> enemyMap = new HashMap<>(); 
+	//public EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
+	//public MyRobot my = new MyRobot();
+	
 	private double radarTurnAmount;
-	private MyRobot my = new MyRobot();
 
+	private Move move = new Move(this, my, enemyMap, mateMap);
+	public boolean lockon;
+	public String target;
+
+	@Override
     public void run() {
-        setAdjustGunForRobotTurn(true);
-		setAdjustRadarForGunTurn(true);
-        setAdjustRadarForRobotTurn(true);
-        while(true) {
+		super.run();
+		// Robot main loop
+		while(true) {
+			if(!lockon){
+				radarTurnAmount = 90;
+			}
 
-		updateMyInfo();
-            radarTurnAmount = 90;
-            setTurnRadarRight(radarTurnAmount);
-            execute();
-    }
+			System.out.println(" ");
+			System.out.println("time:" + getTime());
+
+			super.updateMyInfo();
+			setTurnRadarRight(radarTurnAmount);
+			lockon =false;
+
+			move.execute();
+			execute();
+		  }
+	}
+
 	
-}
+	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
-		enemy = new Enemy(my, e); 
-		enemyDataManager.ScannedRobot(enemy); //update enemy's info
-        enemyDataManager.log();
+		super.onScannedRobot(e);
+		setTarget();
+		if(!isTeammate(e.getName()) ){
+			System.out.println(enemy.name);
+			System.out.println("bearing" + e.getBearing());
+			if(target.equals(enemy.name)){
+			System.out.println("lockon!!!!!!!!");
+			lockon = true;
+			radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.radarHeading);
+			}
+		}
+	}
+
+	public void setTarget(){
+		target = enemyDataManager.leader;
+		if(target != null)
+		move.setTarget(target);
+	}
+
+	public void searchEnemy(String target) {
+		
+	}
+
+	@Override
+	public void onPaint(Graphics2D g){
+		super.onPaint(g);
 	}
 	
-	public void updateMyInfo(){
-		my.x = getX();
-		my.y = getY();
-		my.heading = getHeading();
-		my.headingRadians = getHeadingRadians();
-		my.gunHeading = getGunHeading();
-		my.velocity = getVelocity();
-		my.energy = getEnergy();
-		my.heat = getGunHeat();
-	}
-	/**
-	 * onHitByBullet: What to do when you're hit by a bullet
-	 */
-	public void onHitByBullet(HitByBulletEvent e) {
-		// Replace the next line with any behavior you would like
-		back(10);
-	}
-	
-	/**
-	 * onHitWall: What to do when you hit a wall
-	 */
-	public void onHitWall(HitWallEvent e) {
-		// Replace the next line with any behavior you would like
-		back(20);
-	}	
 }

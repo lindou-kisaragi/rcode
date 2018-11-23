@@ -53,7 +53,7 @@ public class AntiWall
 
     public void onScannedRobot(Enemy enemy){
         lockOn = true;
-        radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading+ enemy.bearing - my.radarHeading);
+        radarTurnAmount = Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.radarHeading);
         gunTurnAmount = prepareFire(my,enemy);
         if(!holdFire)robot.setFire(3);
     }
@@ -208,16 +208,6 @@ public class AntiWall
         if(ans1 > ans2) return ans1;
         if(ans2 > ans1) return ans2;
         return 0;
-    }
-
-    public static double calcRadians(double x,double y) {
-        if ( y == 0 ) {
-            return (x > 0) ? Math.PI / 2 : Math.PI / -2;
-        }else if ( y > 0 ) {
-            return Math.atan(x/y);
-        }else {
-            return Math.atan(x/y) - Math.PI;            
-        }
     }
 
     public void onPaint(Graphics2D g, MyRobot my, Enemy enemy){

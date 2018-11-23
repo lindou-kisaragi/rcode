@@ -8,6 +8,11 @@ import java.lang.*;
  */
 public class RobotInfo extends Point
 {
+    static public final int ROLE_UNKNOWN = 0;
+    static public final int ROLE_DROID   = 1;
+    static public final int ROLE_ROBOT   = 2;
+    static public final int ROLE_LEADER  = 3;
+
     public long time;
     public String name;
     public int role;

@@ -7,7 +7,7 @@ import java.lang.*;
  */
 public class Util
 {
-    public static double battleFieldwidth;
+    public static double battleFieldWidth;
     public static double battleFieldHeight;
 
     
@@ -17,17 +17,35 @@ public class Util
         return new Point(x,y);
     }
 
-    public static Point getGrabity(Point base,Point target,double weight,double dim){
-        return getGrabity(base,target,weight,dim,18); //tankwidth is 18
+    public static Point getRepulsion(Point base,Point target,double weight,double dim){
+        return getRepulsion(base,target,weight,dim,18); //tankwidth is 18
     }
 
-    public static Point getGrabity(Point base,Point target,double weight,double dim, double threshold ){
+    //本来ならGrabity（引力）だがここでは斥力として利用するためRepulsion(斥力)
+    public static Point getRepulsion(Point base,Point target,double weight,double dim, double threshold ){
         double distance = base.calcDistance(target);
         distance = (distance<threshold)?threshold:distance;
         double radians  = base.calcRadians(target);
-        double force = weight/Math.pow(distance,dim);
+
+        double force = weight/Math.pow(distance/10,dim);
+
         return calcPoint(radians, force);
     }   
+
+    public static Point getGravity(Point base,Point target,double weight,double dim){
+        return getGravity(base,target,weight,dim,18); //tankwidth is 18
+    }
+
+    //
+    public static Point getGravity(Point base,Point target,double weight,double dim, double threshold ){
+        double distance = base.calcDistance(target);
+        distance = (distance<threshold)?threshold:distance;
+        double radians  = base.calcRadians(target);
+
+        double force = Math.pow(distance,dim) * 10/ weight;
+
+        return calcPoint(radians, force);
+    }
 
 
     //convert two point to degree
@@ -52,12 +70,17 @@ public class Util
         }
     }
 
-    public static double calcDistance(double x, double y){
-        return (x*x+y*y);
+    public static double calcDistance(Point p){
+        return (p.x*p.x + p.y*p.y);
     }
 
-    public static double calcDistance(double x, double y, double x2, double y2) {
-        double distance = Math.sqrt((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
+    public static double calcDistance(Point p1, Point p2) {
+        double distance = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
+        return  distance;
+    }
+
+    public static double calcDistance(double x1, double y1, double x2, double y2) {
+        double distance = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 -y1));
         return  distance;
     }
 
@@ -69,6 +92,26 @@ public class Util
         }else {
             return Math.atan(x/y) - Math.PI;            
         }
+    }
+
+    public static double calcTurnRadians(double src,double dst){
+        double diffRadians = (dst - src) % (2*Math.PI);
+        if (diffRadians > Math.PI) {
+            diffRadians = diffRadians - 2*Math.PI;
+        } else if (diffRadians < -Math.PI) {
+            diffRadians = diffRadians + 2*Math.PI;
+        }
+        return diffRadians;
+    }
+
+    public static double calcTurnTime(double turnAmount, double velocity) {
+        double turnspeed = 10 - 0.75 * Math.abs(velocity);
+        return (Math.abs(turnAmount)/turnspeed);
+    }
+
+    public static double calcRunTime(double distance, double velocity) {
+        velocity = Math.abs(velocity);
+        return (distance/velocity);
     }
     
     public static boolean isLastShot(double power ,double energy){
