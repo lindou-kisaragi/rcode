@@ -20,13 +20,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 /**
- * AntiWallMove - a class by (your name here)
+ * Move - a class by (your name here)
  */
-public class AntiWallMove
+public class Move
 {
  
-    protected  double WALL_WEIGHT            = 7000;
-    protected  double WALL_DIM               = 1.7;
+    protected  double Robot_WEIGHT            = 7000;
+    protected  double Robot_DIM               = 1.7;
     protected  double ENEMY_WEIGHT           = 5000;
     protected  double ENEMY_DIM              = 1.5;
     protected  double MATE_WEIGHT            = 5000;
@@ -42,10 +42,10 @@ public class AntiWallMove
     private double turnAmount;
     private double aheadAmount;
     public String target;
-    public Enemy targetWall = new Enemy();
+    public Enemy targetRobot = new Enemy();
     Point dst;
 
-    public AntiWallMove( TeamRobot _robot, MyRobot _my,
+    public Move( TeamRobot _robot, MyRobot _my,
          Map<String, Enemy> eMap, Map<String, MyRobot>mMap ){
             robot = _robot;
             my =_my;
@@ -56,29 +56,30 @@ public class AntiWallMove
     public void setTarget(String name){
         target = name;
         System.out.println("target:" + target);
-        targetWall = enemyMap.get(target);
-        System.out.print("(awMove)" );
-        targetWall.log();
+        targetRobot = enemyMap.get(target);
+        System.out.print("(Move)" );
+        targetRobot.log();
     }
 
     public void execute(){
         goPoint();
     }
 
+    //antiGrabityMove
     public Point setDestination() {
         Point dst = new Point(my.x,my.y);
 
-        //target wall bot
-        if(my.calcDistance(targetWall) > 100)
-        dst.add(Util.getGravity(new Point(my.x ,my.y) , new Point(targetWall.x, targetWall.y), 5000, 2));
+        //target bot
+        if(my.calcDistance(targetRobot) > 100)
+        dst.add(Util.getGravity(new Point(my.x ,my.y) , new Point(targetRobot.x, targetRobot.y), 5000, 2));
 
-        //dst.diff(Util.getRepulsion(my, new Point(Util.battleFieldWidth/2,Util.battleFieldHeight/2), 10000,WALL_DIM,1));
+        //dst.diff(Util.getRepulsion(my, new Point(Util.battleFieldWidth/2,Util.battleFieldHeight/2), 10000,Robot_DIM,1));
 
-        //wall
-        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(Util.battleFieldWidth,my.y), WALL_WEIGHT,WALL_DIM,1));
-        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(0,my.y), WALL_WEIGHT,WALL_DIM,1));
-        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(my.x,Util.battleFieldHeight), WALL_WEIGHT,WALL_DIM,1));
-        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(my.x,0), WALL_WEIGHT,WALL_DIM,1));
+        //Robot
+        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(Util.battleFieldWidth,my.y), Robot_WEIGHT,Robot_DIM,1));
+        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(0,my.y), Robot_WEIGHT,Robot_DIM,1));
+        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(my.x,Util.battleFieldHeight), Robot_WEIGHT,Robot_DIM,1));
+        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(my.x,0), Robot_WEIGHT,Robot_DIM,1));
 
         //teammates
         for (Map.Entry<String, MyRobot> e : mateMap.entrySet()) {
@@ -137,13 +138,8 @@ public class AntiWallMove
         }
     }
 
-    //set destination selected by antigravity 
-    //public Point antiGravMove(){
-    //}
-
     public void onPaint(Graphics2D g, MyRobot my, Enemy enemy){
         g.setColor(Color.green);
         g.drawOval((int)dst.x-5, (int)dst.y-5 ,10,10);
-        g.fillRect((int)targetWall.x,(int)targetWall.y,40,40);
     }
 }

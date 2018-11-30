@@ -11,14 +11,14 @@ import java.lang.*;
  */
 public class Enemy extends RobotInfo
 {
-    static public final int ROLE_UNKNOWN = 0;
-    static public final int ROLE_DROID   = 1;
-    static public final int ROLE_ROBOT   = 2;
-    static public final int ROLE_LEADER  = 3;
 
     public double bearing;
     public double distance;
     public boolean scanned;
+
+    public Enemy(){
+
+    }
 
     public Enemy(RobotInfo my, ScannedRobotEvent e) {
         //super(); // default constractor
@@ -42,5 +42,19 @@ public class Enemy extends RobotInfo
         this.scanned = true;
         this.role   = ROLE_UNKNOWN;
         this.heat = 0;
+        this.alive = true;
+    }
+
+    public void log() {
+        System.out.println( 
+		                   " name :" + this.name+
+						   " position :" + this.x + "," + this.y +
+		                   " energy :" + this.energy +
+						   " bearing :" + this.bearing +
+						   " distance :" + this.distance +
+                           " heading :" +  this.headingRadians+
+                           " velocity :" + this.velocity + 
+						   " time :" + this.time
+		);
     }
 }

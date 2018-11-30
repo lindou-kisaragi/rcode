@@ -10,6 +10,8 @@ import robocode.*;
 import robocode.util.Utils;
 import robocode.ScannedRobotEvent;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.lang.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +24,12 @@ import java.util.Map;
  */
 public class EnemyDataManager
 {
-    private  Map<String, Enemy> enemyMap = new HashMap<>(); 
+    public  Map<String, Enemy> enemyMap = new HashMap<>(); 
     
+    public  String leader;
+    public  String sub1;
+    public  String sub2;
+
    public  EnemyDataManager(Map<String, Enemy> eMap){
        enemyMap = eMap;
    }
@@ -32,18 +38,23 @@ public class EnemyDataManager
         enemyMap = new HashMap<>();
     }*/
 
-    protected void ScannedRobot(Enemy enemy) {
+    public void ScannedRobot(Enemy enemy) {
         double lastScanTick = enemy.time;
         Enemy prevEnemy = enemyMap.get(enemy.name);
 
+
         if ( prevEnemy == null )  { // The first time
+            setName(enemy.name);
             if ( enemy.energy > 120 ) {
-                enemy.role = Enemy.ROLE_LEADER;
+                enemy.role = RobotInfo.ROLE_LEADER;
             }else if ( enemy.energy > 100 ) {
-                enemy.role = Enemy.ROLE_DROID;
+                enemy.role = RobotInfo.ROLE_DROID;
             }else {
-                enemy.role = Enemy.ROLE_ROBOT;
+                enemy.role = RobotInfo.ROLE_ROBOT;
             }
+        }else{
+            //System.out.print("(Enemydatamanager:)");
+            //prevEnemy.log();
         }
         /*if ( prevEnemy != null ) {
             if ( prevEnemy.time == enemy.time ) {
@@ -55,6 +66,16 @@ public class EnemyDataManager
         
         enemyMap.put(enemy.name, enemy);
         //return enemy;
+    }
+
+    public void setName(String name) {
+        if(name.contains("Leader")){
+            leader = name;
+        }else if(name.contains("Sub1")){
+            sub1 = name;
+        }else if(name.contains("Sub2")){
+            sub2 = name;
+        }
     }
 
     public void onRobotDeath(RobotDeathEvent e){
@@ -71,6 +92,14 @@ public class EnemyDataManager
     public void log() {
         for(Map.Entry<String, Enemy> entry : enemyMap.entrySet()){
             System.out.println(entry.getKey() + " : " + entry.getValue());
+        }
+    }
+
+    public void onPaint(Graphics2D g){
+        g.setColor(Color.yellow);
+        for(Map.Entry<String, Enemy> entry : enemyMap.entrySet()){
+            Enemy e= entry.getValue();
+            if(e.alive) g.fillRect((int)e.x-15 ,(int)e.y-15 ,30,30);            
         }
     }
 

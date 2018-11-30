@@ -39,7 +39,7 @@ public class G13_Sub1 extends TeamRobot
 	private MyRobot my = new MyRobot();
 
 	private AntiWall aw = new AntiWall(this, my);
-	private AntiWallMove awMove = new AntiWallMove(this,enemyMap);
+	//private AntiWallMove awMove = new AntiWallMove(this,enemyMap);
 
     public void run() {
         setAdjustGunForRobotTurn(true);
@@ -62,7 +62,6 @@ public class G13_Sub1 extends TeamRobot
 
 		if(e.getName().contains("Wall")){
 			aw.onScannedRobot(enemy);
-	
 		}
 
 		enemyDataManager.ScannedRobot(enemy); //update enemy's info
@@ -70,27 +69,22 @@ public class G13_Sub1 extends TeamRobot
 		setTurnRight(e.getBearing()); 
 		setAhead(e.getDistance() - 200);
 
-		try {
-		 broadcastMessage(enemy);
-		 System.out.println("MESSAGE DISPATCHED");
-		} catch (IOException ex) {
-			//TODO: handle exception
-		}
-
+		broadcastMessage(enemy);
 		}
 	}
-	
+
 	public void updateMyInfo(){
+		my.time =getTime();
 		my.x = getX();
 		my.y = getY();
 		my.heading = getHeading();
 		my.headingRadians = getHeadingRadians();
 		my.gunHeading = getGunHeading();
 		my.radarHeading = getRadarHeading();
-
 		my.velocity = getVelocity();
 		my.energy = getEnergy();
 		my.heat = getGunHeat();
+		broadcastMessage(my);
 	}
 	/**
 	 * onHitByBullet: What to do when you're hit by a bullet
@@ -107,5 +101,14 @@ public class G13_Sub1 extends TeamRobot
 		// Replace the next line with any behavior you would like
 		back(20);
 	}	
+
+	@Override
+    public void broadcastMessage(Serializable s ){
+        try {
+            super.broadcastMessage(s);
+        } catch (IOException ex) {
+
+        }
+	}
 
 }
