@@ -34,13 +34,15 @@ public class G13_Sub2 extends BaseRobot
 	//public Enemy enemy;
 	//public  Map<String, Enemy> enemyMap = new HashMap<>(); 
 	//public EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
+	//public Map<String, MyRobot> mateMap = new HashMap<>();
 	//public MyRobot my = new MyRobot();
 	
 	private double radarTurnAmount;
 
-	private Move move = new Move(this, my, enemyMap, mateMap);
+	public Move move = new Move(this, my, enemyMap, mateMap);
 	public boolean lockon;
 	public String target;
+	public boolean targetSet = false;
 
 	@Override
     public void run() {
@@ -56,7 +58,7 @@ public class G13_Sub2 extends BaseRobot
 
 			super.updateMyInfo();
 			setTurnRadarRight(radarTurnAmount);
-			lockon =false;
+			lockon = false;
 
 			move.execute();
 			execute();
@@ -67,31 +69,48 @@ public class G13_Sub2 extends BaseRobot
 	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
 		super.onScannedRobot(e);
-		setTarget();
+		if(!targetSet && enemyDataManager.allScanned){
+			setTarget();
+		}
+
 		if(!isTeammate(e.getName()) ){
 			System.out.println(enemy.name);
-			System.out.println("bearing" + e.getBearing());
-			if(target.equals(enemy.name)){
-			System.out.println("lockon!!!!!!!!");
-			lockon = true;
-			radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.radarHeading);
+
+			if(targetSet && target.equals(enemy.name)){
+				System.out.println("lockon!!!!!!!!");
+				move.setTarget(target);
+				lockon = true;
+				radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.radarHeading);
 			}
 		}
 	}
-
+	
 	public void setTarget(){
-		target = enemyDataManager.leader;
-		if(target != null)
-		move.setTarget(target);
+		target = enemyDataManager.setTarget();
+		System.out.println("target Set!!!!!!!!!");
+
+		if(target != null){
+			move.setTarget(target);
+			targetSet = true;
+		}
 	}
 
 	public void searchEnemy(String target) {
-		
 	}
 
+	public void onRobotDeath(RobotDeathEvent e){
+		super.onRobotDeath(e);
+		if(target.equals(e.getName())){
+			setTarget();
+		}
+	}
+
+	
 	@Override
 	public void onPaint(Graphics2D g){
 		super.onPaint(g);
+		move.onPaint(g);
+		g.setColor(Color.white);
+		g.drawString("Target: " + target, (int)my.x - 60 ,(int)my.y - 60);
 	}
-	
 }

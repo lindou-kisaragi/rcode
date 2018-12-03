@@ -24,11 +24,11 @@ import java.util.Map;
  */
 public class Move
 {
- 
-    protected  double Robot_WEIGHT            = 7000;
-    protected  double Robot_DIM               = 1.7;
-    protected  double ENEMY_WEIGHT           = 5000;
-    protected  double ENEMY_DIM              = 1.5;
+    //weight
+    protected  double WALL_WEIGHT            = 7000;
+    protected  double WALL_DIM               = 1.7;
+    protected  double ENEMY_WEIGHT           = 3000;
+    protected  double ENEMY_DIM              = 2;
     protected  double MATE_WEIGHT            = 5000;
     protected  double MATE_DIM               = 2;
     protected  double BULLET_WEIGHT          = 10000;
@@ -55,10 +55,7 @@ public class Move
 
     public void setTarget(String name){
         target = name;
-        System.out.println("target:" + target);
         targetRobot = enemyMap.get(target);
-        System.out.print("(Move)" );
-        targetRobot.log();
     }
 
     public void execute(){
@@ -69,27 +66,28 @@ public class Move
     public Point setDestination() {
         Point dst = new Point(my.x,my.y);
 
-        //target bot
+        //target 
         if(my.calcDistance(targetRobot) > 100)
         dst.add(Util.getGravity(new Point(my.x ,my.y) , new Point(targetRobot.x, targetRobot.y), 5000, 2));
 
-        //dst.diff(Util.getRepulsion(my, new Point(Util.battleFieldWidth/2,Util.battleFieldHeight/2), 10000,Robot_DIM,1));
+        //dst.diff(Util.getRepulsion(my, new Point(Util.battleFieldWidth/2,Util.battleFieldHeight/2), 10000,WALL_DIM,1));
 
         //Robot
-        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(Util.battleFieldWidth,my.y), Robot_WEIGHT,Robot_DIM,1));
-        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(0,my.y), Robot_WEIGHT,Robot_DIM,1));
-        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(my.x,Util.battleFieldHeight), Robot_WEIGHT,Robot_DIM,1));
-        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(my.x,0), Robot_WEIGHT,Robot_DIM,1));
+        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(Util.battleFieldWidth,my.y), WALL_WEIGHT,WALL_DIM,1));
+        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(0,my.y), WALL_WEIGHT,WALL_DIM,1));
+        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(my.x,Util.battleFieldHeight), WALL_WEIGHT,WALL_DIM,1));
+        dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(my.x,0), WALL_WEIGHT,WALL_DIM,1));
 
         //teammates
         for (Map.Entry<String, MyRobot> e : mateMap.entrySet()) {
             dst.diff(Util.getRepulsion(new Point(my.x, my.y) ,e.getValue(), MATE_WEIGHT,MATE_DIM,1));
         }
         
-        //enemies
+        /*enemies
         for (Map.Entry<String, Enemy> e : enemyMap.entrySet()) {
+            if(!e.getKey().equals(target)) //except target
             dst.diff(Util.getRepulsion(new Point(my.x, my.y) ,e.getValue(), ENEMY_WEIGHT,ENEMY_DIM,1));
-        }
+        }*/
         return dst;
     }
 
@@ -110,7 +108,7 @@ public class Move
             aheadAmount = 0;
         }
 
-        System.out.println("(aheadAmount)" + aheadAmount + "(turnTo)" + turnTo);
+        //System.out.println("(aheadAmount)" + aheadAmount + "(turnTo)" + turnTo);
 
         robot.setTurnRightRadians(turnAmount);
         robot.setAhead(aheadAmount);
@@ -134,12 +132,13 @@ public class Move
 
     public void log() {
         for(Map.Entry<String, Enemy> entry : enemyMap.entrySet()){
-            System.out.println(" (awMove): "  +entry.getKey() + entry.getValue());
+            System.out.println(" (Move): "  +entry.getKey() + entry.getValue());
         }
     }
 
-    public void onPaint(Graphics2D g, MyRobot my, Enemy enemy){
+    public void onPaint(Graphics2D g){
         g.setColor(Color.green);
         g.drawOval((int)dst.x-5, (int)dst.y-5 ,10,10);
+        g.fillRect((int)targetRobot.x,(int)targetRobot.y,30,30);
     }
 }

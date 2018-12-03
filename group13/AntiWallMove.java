@@ -87,6 +87,7 @@ public class AntiWallMove
         
         //enemies
         for (Map.Entry<String, Enemy> e : enemyMap.entrySet()) {
+            if(!e.getKey().equals(target)) //except target
             dst.diff(Util.getRepulsion(new Point(my.x, my.y) ,e.getValue(), ENEMY_WEIGHT,ENEMY_DIM,1));
         }
         return dst;
@@ -141,9 +142,9 @@ public class AntiWallMove
     //public Point antiGravMove(){
     //}
 
-    public void onPaint(Graphics2D g, MyRobot my, Enemy enemy){
+    public void onPaint(Graphics2D g){
         g.setColor(Color.green);
         g.drawOval((int)dst.x-5, (int)dst.y-5 ,10,10);
-        g.fillRect((int)targetWall.x,(int)targetWall.y,40,40);
+        g.fillRect((int)targetWall.x,(int)targetWall.y,30,30);
     }
 }

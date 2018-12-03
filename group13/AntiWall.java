@@ -80,7 +80,7 @@ public class AntiWall
         double gunTurnAmount;
 		// //decide gun turn amount according to wall's move type
         if(WALL_MOVETYPE==1 || WALL_MOVETYPE==2){
-			gunTurnAmount = Utils.normalRelativeAngleDegrees(Util.pointToDegree(my.x,my.y,postX,postY)- my.gunHeading);
+			gunTurnAmount = Utils.normalRelativeAngleDegrees(Util.pointToDegree(my.x,my.y,postX,postY) - my.gunHeading);
 		}else{
 			gunTurnAmount = Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.gunHeading);
         }

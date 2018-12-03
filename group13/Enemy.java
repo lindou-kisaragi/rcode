@@ -42,7 +42,6 @@ public class Enemy extends RobotInfo
         this.scanned = true;
         this.role   = ROLE_UNKNOWN;
         this.heat = 0;
-        this.alive = true;
     }
 
     public void log() {
