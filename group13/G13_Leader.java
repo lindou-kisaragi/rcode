@@ -96,6 +96,8 @@ public class G13_Leader extends TeamRobot
 				awMove.setTarget(enemy.name);
 				islastshot = Util.isLastShot(3,enemy.energy);
 				//if(!aw.holdFire)setFire(3);
+				//setTurnRight(e.getBearing());
+				//setAhead(e.getDistance()-100);
 			}
 		}
 
@@ -160,7 +162,7 @@ public class G13_Leader extends TeamRobot
     public void onPaint(Graphics2D g) {
 		try {
 			aw.onPaint(g,my,enemy);		
-			awMove.onPaint(g, my, enemy);
+			awMove.onPaint(g);
 			enemyDataManager.onPaint(g);
 		} catch (RuntimeException e) {
 			//TODO: handle exception

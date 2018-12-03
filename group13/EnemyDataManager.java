@@ -29,19 +29,15 @@ public class EnemyDataManager
     public  String leader;
     public  String sub1;
     public  String sub2;
+    public boolean allScanned = false;
 
-   public  EnemyDataManager(Map<String, Enemy> eMap){
+    public  EnemyDataManager(Map<String, Enemy> eMap){
        enemyMap = eMap;
-   }
-
-    /*protected void createMap(){
-        enemyMap = new HashMap<>();
-    }*/
+    }
 
     public void ScannedRobot(Enemy enemy) {
         double lastScanTick = enemy.time;
         Enemy prevEnemy = enemyMap.get(enemy.name);
-
 
         if ( prevEnemy == null )  { // The first time
             setName(enemy.name);
@@ -53,8 +49,9 @@ public class EnemyDataManager
                 enemy.role = RobotInfo.ROLE_ROBOT;
             }
         }else{
-            //System.out.print("(Enemydatamanager:)");
-            //prevEnemy.log();
+            if(enemyMap.size() == 6){
+                allScanned = true;
+            }
         }
         /*if ( prevEnemy != null ) {
             if ( prevEnemy.time == enemy.time ) {
@@ -78,10 +75,46 @@ public class EnemyDataManager
         }
     }
 
+    public String setTarget(){
+        double energy1 = -1;
+        double energy2 = -1;
+        String name = new String();
+
+        for(Map.Entry<String, Enemy> entry : enemyMap.entrySet()){
+            name = entry.getKey();
+            if(name.equals(leader)){
+                return leader;
+            }
+            if(name.equals(sub1) ){
+                Enemy esub1 = entry.getValue();
+                energy1 = esub1.energy;
+            }
+            
+            if(name.equals(sub2)){
+                Enemy esub2 = entry.getValue();
+                energy2 = esub2.energy;
+            }
+        }
+
+        if(energy1 < 0 && energy2 < 0){
+            return name;
+        }
+        else if(energy1 < 0 && energy2 > 0){
+            return sub2;
+        }else if(energy2 < 0 && energy1 >0){
+            return sub1;
+        }else if(energy1 > energy2){
+            return sub2;
+        }else{
+            return sub1;
+        }
+
+    }
+
     public void onRobotDeath(RobotDeathEvent e){
         Enemy enemy = enemyMap.get(e.getName());
 		if(enemy != null){
-			enemy.alive = false;
+            enemyMap.remove(enemy.name);
 		}
     }
 
@@ -98,8 +131,8 @@ public class EnemyDataManager
     public void onPaint(Graphics2D g){
         g.setColor(Color.yellow);
         for(Map.Entry<String, Enemy> entry : enemyMap.entrySet()){
-            Enemy e= entry.getValue();
-            if(e.alive) g.fillRect((int)e.x-15 ,(int)e.y-15 ,30,30);            
+            Enemy e = entry.getValue();
+            g.fillRect((int)e.x-15 ,(int)e.y-15 ,30,30);            
         }
     }
 

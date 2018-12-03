@@ -33,7 +33,6 @@ public class BaseRobot extends TeamRobot
 	public  Map<String, Enemy> enemyMap = new HashMap<>(); 
 	public EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
 	public Map<String, MyRobot> mateMap = new HashMap<>();
-	//private TeamDataManager teamDataManager = new TeamDataManager();
 
 	public MyRobot my = new MyRobot();
 	
@@ -52,7 +51,6 @@ public class BaseRobot extends TeamRobot
 
 		if(!isTeammate(e.getName()) ){
 			enemy = new Enemy(my, e); 
-			System.out.println("pupupu");
 			Enemy prevEnemy = enemyMap.get(enemy.name);
             enemyDataManager.ScannedRobot(enemy); //update enemy's info
             broadcastMessage(enemy);
