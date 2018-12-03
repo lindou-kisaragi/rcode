@@ -21,7 +21,6 @@ public class Util
         return getRepulsion(base,target,weight,dim,18); //tankwidth is 18
     }
 
-    //本来ならGrabity（引力）だがここでは斥力として利用するためRepulsion(斥力)
     public static Point getRepulsion(Point base,Point target,double weight,double dim, double threshold ){
         double distance = base.calcDistance(target);
         distance = (distance<threshold)?threshold:distance;

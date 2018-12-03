@@ -6,6 +6,7 @@ import group13.MyRobot;
 import group13.Enemy;
 import group13.EnemyDataManager;
 import group13.Move;
+import group13.Gun;
 import group13.AntiWall;
 import group13.AntiWallMove;
 import group13.Util;
@@ -40,6 +41,7 @@ public class G13_Sub2 extends BaseRobot
 	private double radarTurnAmount;
 
 	public Move move = new Move(this, my, enemyMap, mateMap);
+	public Gun gun = new Gun(this, my, enemyMap);
 	public boolean lockon;
 	public String target;
 	public boolean targetSet = false;
@@ -61,6 +63,7 @@ public class G13_Sub2 extends BaseRobot
 			lockon = false;
 
 			move.execute();
+			gun.execute();
 			execute();
 		  }
 	}
@@ -79,6 +82,7 @@ public class G13_Sub2 extends BaseRobot
 			if(targetSet && target.equals(enemy.name)){
 				System.out.println("lockon!!!!!!!!");
 				move.setTarget(target);
+				gun.setTarget(target);
 				lockon = true;
 				radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.radarHeading);
 			}
@@ -91,6 +95,7 @@ public class G13_Sub2 extends BaseRobot
 
 		if(target != null){
 			move.setTarget(target);
+			gun.setTarget(target);
 			targetSet = true;
 		}
 	}

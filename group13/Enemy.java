@@ -33,6 +33,7 @@ public class Enemy extends RobotInfo
         
         this.x = scannedX;
         this.y = scannedY;
+        this.angle = angle;
         this.bearing = e.getBearing();
         this.distance = e.getDistance();
         this.heading = e.getHeading();

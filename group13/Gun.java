@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class Gun() {
+public class Gun{
     public  Map<String, Enemy> enemyMap = new HashMap<>(); 
     public String target;
     public Enemy targetRobot = new Enemy();
@@ -32,10 +32,10 @@ public class Gun() {
     private double gunTurnAmount;
     private double power;
     
-    private static final int AIMTYPE_PINPOINT = 0;
-    private static final int AIMTYPE_CONSTANT = 1;
+    public static final int AIMTYPE_PINPOINT = 0;
+    public static final int AIMTYPE_CONSTANT = 1;
 
-    public Gun(TeamRobot _robot, MyRobot _my
+    public Gun(TeamRobot _robot, MyRobot _my,
         Map<String, Enemy> eMap) {
             robot = _robot;
             my =_my;
@@ -64,7 +64,7 @@ public class Gun() {
     }
 
     public double calcGunTurnRadians(MyRobot my, Enemy en){
-        double amount;
+        double amount = 0;
         Point nextPoint = new Point();
         nextPoint = setNextPoint();        
         //do something
@@ -73,10 +73,10 @@ public class Gun() {
     }
 
     public Point setNextPoint(){
-        int aimType;
+        int aimType = 0;
         aimType = setNextAimType();
         Point nextPoint = new Point();
-        switch (aimtype) {
+        switch (aimType) {
             case AIMTYPE_PINPOINT:
                 nextPoint = pinpoint();
                 break;
@@ -84,6 +84,7 @@ public class Gun() {
                 //nextPoint = constant();
                 break;
             default:
+                nextPoint = pinpoint();
                 break;
         }
 
@@ -101,7 +102,8 @@ public class Gun() {
        return  new Point(targetRobot.x , targetRobot.y);
     }
 
+    /*
     private Point constant(){
 
-    }
+    }*/
 }
