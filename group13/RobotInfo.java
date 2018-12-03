@@ -16,6 +16,7 @@ public class RobotInfo extends Point
     public long time;
     public String name;
     public int role;
+    public double angle;
     public double heading;
     public double headingRadians;
     public double velocity;
