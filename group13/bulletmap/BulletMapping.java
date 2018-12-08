@@ -43,7 +43,8 @@ public class BulletMapping
         BulletInfo bullet=new BulletInfo();
         if(enemy.energy<prevenemy.energy){
             //shoot!!detect!
-            //need pattern
+            Estimation estimation=new Estimation(this);
+            
             bullet.name=enemy.name;
             bullet.x=enemy.x;
             bullet.y=enemy.y;
@@ -54,11 +55,12 @@ public class BulletMapping
             bullet.tprev=prevenemy.time;
             bullet.myx=my.x;
             bullet.myy=my.y;
+            bullet.pattern=estimation.EstimationPattern(true);
         }
         bulletmap.add(bullet);
     }
-    public void BulletDelete(){
-        for(int i=0;i<=bulletmap.size()-1;i++){
+    public void BulletDelete(){//jyouji jikkou hissu!!!
+        for(int i=0;i<bulletmap.size()-1;i++){
             if(bulletmap.get(i).t*bulletmap.get(i).speed>Util.battleFieldWidth*1.4142){
                 bulletmap.get(i).ishit=false;
                 BulletInfo bullet=new BulletInfo();
@@ -77,8 +79,34 @@ public class BulletMapping
     public double Distance(int i){
         return Math.pow(Math.pow(bulletmap.get(i).x-my.x,2)+Math.pow(bulletmap.get(i).x-my.x,2), 0.5);
     }
-    public void FriendBulletMove(){
-        
+    public void FriendBulletGenerate(double power,double gunTurnAmount,int pattern){
+        BulletInfo bullet=new BulletInfo();
+        bullet.prex=my.x;
+        bullet.prey=my.y;
+        bullet.x=my.x;
+        bullet.y=my.y;
+        bullet.speed=20-3*(power);
+        bullet.name=null;
+        bullet.pattern=pattern;
+        bullet.tprev=my.time;
+        bullet.t=my.time;
+        bullet.angle1=gunTurnAmount;
+        bullet.angle2=gunTurnAmount;
+
+        bulletmapfriend.add(bullet);
+    }
+    public void FriendBulletMove(int i){//atode setuzoku//jyouji jikkou!!!!!
+        double x,y,speed,power,t,t2,xnow,ynow,directionx,directiony,gunTurnAmount;//x,y ga hassya iti, t ga hassya jikoku, t2 ga genzai
+        x=bulletmapfriend.get(i).x;
+        y=bulletmapfriend.get(i).y;
+        gunTurnAmount=bulletmapfriend.get(i).angle1;
+        t=bulletmapfriend.get(i).t;
+        t2=my.time;
+        speed=bulletmapfriend.get(i).speed;
+        directionx=Math.sin(gunTurnAmount);
+        directiony=Math.cos(gunTurnAmount);
+        xnow=x+(t2-t)*speed*directionx;
+        ynow=y+(t2-t)*speed*directiony;
     }
     @SuppressWarnings("unchecked")
     public static <T> T deepcopy(T obj) {
@@ -89,9 +117,8 @@ public class BulletMapping
         }catch(Exception e){
             return null;
         }
-        
     }
-    public Double CalculateAngle1(BulletInfo bullet){
+    public Double CalculateAngle1(BulletInfo bullet){//kakudo gyaku kamo
         double k,X,Y;
         k=((bullet.myx-bullet.prex)*(bullet.prex-my.x)+(bullet.myy-bullet.prey)*(bullet.prey-my.y))
         /(Math.pow(bullet.myx-bullet.prex,2))+(Math.pow(bullet.myy-bullet.prey,2));
@@ -101,15 +128,15 @@ public class BulletMapping
         double diff_Y = Math.pow(Math.pow(X+bullet.prex-my.x,2)+Math.pow(Y+bullet.prey-my.y,2), 0.5);
         if(X*(bullet.myy-bullet.prey)>Y*(bullet.myx-bullet.prex)){
             if(bullet.myx>0){
-                return Math.atan(diff_X/diff_Y)/Math.PI*180;
-            }else{
                 return Math.atan(diff_X/diff_Y)/Math.PI*180 + 180;
+            }else{
+                return Math.atan(diff_X/diff_Y)/Math.PI*180;
             }
         }else{
             if(bullet.myx>0){
-                return Math.atan(diff_X/diff_Y)/Math.PI*180 + 180;
-            }else{
                 return Math.atan(diff_X/diff_Y)/Math.PI*180;
+            }else{
+                return Math.atan(diff_X/diff_Y)/Math.PI*180 + 180;
             }
         }
     }
@@ -123,23 +150,22 @@ public class BulletMapping
         double diff_Y = Math.pow(Math.pow(X+bullet.x-my.x,2)+Math.pow(Y+bullet.y-my.y,2), 0.5);
         if(X*(bullet.myy-bullet.y)>Y*(bullet.myx-bullet.x)){
             if(bullet.myx>0){
-                return Math.atan(diff_X/diff_Y)/Math.PI*180;
+                return Math.atan(diff_X/diff_Y);
             }else{
-                return Math.atan(diff_X/diff_Y)/Math.PI*180 + 180;
+                return Math.atan(diff_X/diff_Y)+Math.PI;
             }
         }else{
             if(bullet.myx>0){
-                return Math.atan(diff_X/diff_Y)/Math.PI*180 + 180;
+                return Math.atan(diff_X/diff_Y)+Math.PI;
             }else{
-                return Math.atan(diff_X/diff_Y)/Math.PI*180;
+                return Math.atan(diff_X/diff_Y);
             }
         }
     }
     public void BulletHittedbyEnemy(String enemyname){
         BulletInfo bullet=new BulletInfo();
         int j=0;
-        for(int i=0; i<=bulletmap.size();i++){
-        //for(BulletInfo b:bulletmap){
+        for(int i=0; i<bulletmap.size();i++){
             if(bulletmap.get(i).name==enemyname){
                 if(BulletRadiusLong(i)>=Distance(i) && BulletRadiusShort(i)<=Distance(i)){
                     j=i;
@@ -153,6 +179,18 @@ public class BulletMapping
         bullet.ishit=true;
 
         bulletdata.add(bullet);
+    }
+    public List<BulletInfo> returnbulletmap(){
+        return bulletmap;
+    }
+    public List<BulletInfo> returnbulletmapfriend(){
+        return bulletmapfriend;
+    }
+    public List<BulletInfo> returnbulletdata(){
+        return bulletdata;
+    }
+    public List<BulletInfo> returnbulletdatafriend(){
+        return bulletdatafriend;
     }
 }
 

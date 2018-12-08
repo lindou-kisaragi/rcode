@@ -5,6 +5,7 @@ import group13.RobotInfo;
 import group13.MyRobot;
 import group13.Enemy;
 import group13.Util;
+import group13.bulletmap.*;
 
 import robocode.*;
 import robocode.AdvancedRobot;
@@ -35,11 +36,14 @@ public class Gun{
     public static final int AIMTYPE_PINPOINT = 0;
     public static final int AIMTYPE_CONSTANT = 1;
 
+    public BulletMapping bulletmapping;
+    public Estimation estimation=new Estimation();
     public Gun(TeamRobot _robot, MyRobot _my,
-        Map<String, Enemy> eMap) {
+        Map<String, Enemy> eMap,BulletMapping bulletMapping) {
             robot = _robot;
             my =_my;
             enemyMap = eMap;
+            bulletmapping=bulletMapping;
     }
 
     public void setTarget(String name){
@@ -48,8 +52,11 @@ public class Gun{
     }
 
     public void execute() {
+        int pattern;
+        pattern=estimation.EstimationPattern(false);
         doGunTurn();
         dofire();
+        bulletmapping.FriendBulletGenerate(power,gunTurnAmount,pattern);
     }
 
     public void doGunTurn() {
