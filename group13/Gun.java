@@ -35,7 +35,8 @@ public class Gun{
     
     public static final int AIMTYPE_PINPOINT = 0;
     public static final int AIMTYPE_CONSTANT = 1;
-
+    public static final int AIMTYPE_ACCELE = 2;
+    public static final int AIMTYPE_CIRCLE = 3;
     private AntiWall antiWall = new AntiWall();
 
     public BulletMapping bulletmapping;
@@ -106,6 +107,12 @@ public class Gun{
             case AIMTYPE_CONSTANT:
                 //nextPoint = constant();
                 break;
+            case AIMTYPE_ACCELE:
+                //nextPoint = Accele();
+                break;
+            case AIMTYPE_CIRCLE:
+                //nextPoint = Circle();
+                break;
             default:
                 nextPoint = pinpoint();
                 break;
@@ -127,7 +134,14 @@ public class Gun{
 
     /*
     private Point constant(){
+    }*/
+    /*
+    private Point Accele(){
 
+    }*/
+
+    /*
+    private Point Circle(){  
     }*/
 
     public void onPaint(Graphics2D g) {
