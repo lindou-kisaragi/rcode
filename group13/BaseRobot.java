@@ -7,6 +7,7 @@ import group13.EnemyDataManager;
 import group13.AntiWall;
 import group13.AntiWallMove;
 import group13.Util;
+import group13.bulletmap.*;
 
 import robocode.*;
 import robocode.util.Utils;
@@ -33,8 +34,9 @@ public class BaseRobot extends TeamRobot
 	public  Map<String, Enemy> enemyMap = new HashMap<>(); 
 	public EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
 	public Map<String, MyRobot> mateMap = new HashMap<>();
-
 	public MyRobot my = new MyRobot();
+	
+	public BulletMapping bulletmapping=new BulletMapping(my);
 	
 	public void run() {
 		// Initialization of the robot should be put here
@@ -52,6 +54,7 @@ public class BaseRobot extends TeamRobot
 		if(!isTeammate(e.getName()) ){
 			enemy = new Enemy(my, e); 
 			Enemy prevEnemy = enemyMap.get(enemy.name);
+			bulletmapping.ShootObservation(enemy, prevEnemy);
             enemyDataManager.ScannedRobot(enemy); //update enemy's info
             broadcastMessage(enemy);
 		}
@@ -91,9 +94,8 @@ public class BaseRobot extends TeamRobot
         broadcastMessage(my);
 	}
 	
-	public void onHitByBullet(HitByBulletEvent e) {
-		// Replace the next line with any behavior you would like
-		back(10);
+	public void onHitByBullet(HitByBulletEvent e){
+			bulletmapping.BulletHittedbyEnemy(e.getName());
 	}
 
 	public void onHitWall(HitWallEvent e) {
