@@ -41,7 +41,8 @@ public class G13_Sub1 extends BaseRobot
 	private double radarTurnAmount;
 
 	public Move move = new Move(this, my, enemyMap, mateMap);
-	public Gun gun = new Gun(this, my, enemyMap);
+	public Gun gun = new Gun(this, my, enemyMap, bulletmapping);
+	
 	public boolean lockon;
 	public String target;
 	public boolean targetSet = false;

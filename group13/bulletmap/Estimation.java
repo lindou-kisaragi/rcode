@@ -11,8 +11,6 @@ import robocode.*;
 import robocode.util.Utils;
 import robocode.ScannedRobotEvent;
 
-
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.*;
@@ -67,7 +65,7 @@ public class Estimation{
             x=bulletmapping.returnbulletdatafriend();
         }
         
-        for(int i;i<x.size();i++){//i ha jikan ni shita houga iikamo.
+        for(int i=0;i<x.size();i++){//i ha jikan ni shita houga iikamo.
             if(x.get(i).pattern==pattern){
                 if(x.get(i).ishit==true){
                     ishit=1;
@@ -79,6 +77,7 @@ public class Estimation{
         }
         return xa;
     }
+    /*
     public double EstimationAngleEnemy(int i,int pattern,double accel,double speed,double angle){//mikansei
         List<BulletInfo> a=bulletmapping.returnbulletmap();
         if(pattern==1){//tousoku
@@ -89,5 +88,5 @@ public class Estimation{
 
         }
         
-    }
+    }*/
 }

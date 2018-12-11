@@ -38,6 +38,7 @@ public class G13_Leader extends BaseRobot
 	//public EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
 	//public Map<String, MyRobot> mateMap = new HashMap<>();
 	//public MyRobot my = new MyRobot();
+	//public BulletMapping bulletmapping = new BulletMapping(my);
 
   	public double radarTurnAmount;
 
@@ -46,9 +47,8 @@ public class G13_Leader extends BaseRobot
 	public boolean lockOn;
 	public boolean islastshot = false;
 
-
 	public Move move = new Move(this, my, enemyMap, mateMap);
-	public Gun gun = new Gun(this, my, enemyMap);
+	public Gun gun = new Gun(this, my, enemyMap, bulletmapping);
 	
 	private AntiWall aw = new AntiWall(this, my);
 	public AntiWallMove awMove = new AntiWallMove(this,my,enemyMap,mateMap);

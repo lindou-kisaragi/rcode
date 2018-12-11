@@ -36,7 +36,7 @@ public class BaseRobot extends TeamRobot
 	public Map<String, MyRobot> mateMap = new HashMap<>();
 	public MyRobot my = new MyRobot();
 	
-	public BulletMapping bulletmapping=new BulletMapping(my);
+	public BulletMapping bulletmapping = new BulletMapping(my);
 	
 	public void run() {
 		// Initialization of the robot should be put here
@@ -54,7 +54,7 @@ public class BaseRobot extends TeamRobot
 		if(!isTeammate(e.getName()) ){
 			enemy = new Enemy(my, e); 
 			Enemy prevEnemy = enemyMap.get(enemy.name);
-			bulletmapping.ShootObservation(enemy, prevEnemy);
+			//bulletmapping.ShootObservation(enemy, prevEnemy);
             enemyDataManager.ScannedRobot(enemy); //update enemy's info
             broadcastMessage(enemy);
 		}
