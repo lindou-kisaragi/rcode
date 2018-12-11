@@ -47,14 +47,15 @@ public class Enemy extends RobotInfo
 
     public void log() {
         System.out.println( 
-		                   " name :" + this.name+
+                           " name :" + this.name+
+                           " time :" + this.time +
+                           "alive :" + this.alive +
 						   " position :" + this.x + "," + this.y +
 		                   " energy :" + this.energy +
 						   " bearing :" + this.bearing +
 						   " distance :" + this.distance +
                            " heading :" +  this.headingRadians+
-                           " velocity :" + this.velocity + 
-						   " time :" + this.time
+                           " velocity :" + this.velocity
 		);
     }
 }

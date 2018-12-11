@@ -41,6 +41,7 @@ public class EnemyDataManager
 
         if ( prevEnemy == null )  { // The first time
             setName(enemy.name);
+            enemy.alive = true;
             if ( enemy.energy > 120 ) {
                 enemy.role = RobotInfo.ROLE_LEADER;
             }else if ( enemy.energy > 100 ) {
@@ -49,8 +50,14 @@ public class EnemyDataManager
                 enemy.role = RobotInfo.ROLE_ROBOT;
             }
         }else{
-            if(enemyMap.size() == 6){
+            if(enemyMap.size() == Util.enemies){
                 allScanned = true;
+                System.out.println("allscanned !!!");
+            }
+            if(prevEnemy.alive){
+                enemy.alive = true;
+            }else{
+                enemy.alive = false;
             }
         }
         /*if ( prevEnemy != null ) {
@@ -62,7 +69,6 @@ public class EnemyDataManager
             }*/
         
         enemyMap.put(enemy.name, enemy);
-        //return enemy;
     }
 
     public void setName(String name) {
@@ -81,20 +87,21 @@ public class EnemyDataManager
         String name = new String();
 
         for(Map.Entry<String, Enemy> entry : enemyMap.entrySet()){
-            name = entry.getKey();
-            if(name.equals(leader)){
-                return leader;
-            }
-            if(name.equals(sub1) ){
-                Enemy esub1 = entry.getValue();
-                energy1 = esub1.energy;
-            }
-            
-            if(name.equals(sub2)){
-                Enemy esub2 = entry.getValue();
-                energy2 = esub2.energy;
+            Enemy enemy = entry.getValue();
+            if(enemy.alive){
+                name = entry.getKey();
+                if(name.equals(leader)){
+                    return leader;
+                }
+                if(name.equals(sub1) ){
+                    energy1 = enemy.energy;
+                }
+                if(name.equals(sub2)){
+                    energy2 = enemy.energy;
+                }
             }
         }
+        log();
 
         if(energy1 < 0 && energy2 < 0){
             return name;
@@ -103,7 +110,7 @@ public class EnemyDataManager
             return sub2;
         }else if(energy2 < 0 && energy1 >0){
             return sub1;
-        }else if(energy1 > energy2){
+        }else if(energy1 >= energy2){
             return sub2;
         }else{
             return sub1;
@@ -113,9 +120,14 @@ public class EnemyDataManager
 
     public void onRobotDeath(RobotDeathEvent e){
         Enemy enemy = enemyMap.get(e.getName());
+        enemy.alive = false;
+        System.out.println("(EnemyDataManager) robot death " + e.getName());
+        enemyMap.put(enemy.name, enemy);
+        log();
+        /*
 		if(enemy != null){
             enemyMap.remove(enemy.name);
-		}
+		}*/
     }
 
     public Enemy get(String name){
@@ -123,8 +135,11 @@ public class EnemyDataManager
     }
 
     public void log() {
+        System.out.println("Number of Enemy: " + enemyMap.size());
         for(Map.Entry<String, Enemy> entry : enemyMap.entrySet()){
             System.out.println(entry.getKey() + " : " + entry.getValue());
+            System.out.print("   ");
+            entry.getValue().log();
         }
     }
 
@@ -132,16 +147,19 @@ public class EnemyDataManager
         g.setColor(Color.yellow);
         for(Map.Entry<String, Enemy> entry : enemyMap.entrySet()){
             Enemy e = entry.getValue();
-            g.fillRect((int)e.x-15 ,(int)e.y-15 ,30,30);            
+            if(e.alive){
+                 g.fillRect((int)e.x-15 ,(int)e.y-15 ,30,30);     
+            }       
         }
     }
 
-    /*public boolean wallsAlive(){
-        for (Map.Entry<String, Enemy> e : enemyMap.entrySet()) {
-            if(enemy != null && enemy.name.contais("Wall")){
+    public boolean wallsAlive(){
+        for (Map.Entry<String, Enemy> entry : enemyMap.entrySet()) {
+            Enemy e = entry.getValue();
+            if(e.alive && e.name.contains("Wall")){
                 return true;
-            }
+            }     
         }
         return false;
-    }*/
+    }
 }

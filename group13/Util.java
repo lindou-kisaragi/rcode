@@ -7,6 +7,7 @@ import java.lang.*;
  */
 public class Util
 {
+    public static int enemies;
     public static double battleFieldWidth;
     public static double battleFieldHeight;
 

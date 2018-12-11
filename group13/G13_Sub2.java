@@ -56,8 +56,9 @@ public class G13_Sub2 extends BaseRobot
 			}
 
 			System.out.println(" ");
+			System.out.println("target :" + target);
 			System.out.println("time:" + getTime());
-
+			
 			super.updateMyInfo();
 			setTurnRadarRight(radarTurnAmount);
 			lockon = false;
@@ -67,22 +68,20 @@ public class G13_Sub2 extends BaseRobot
 			execute();
 		  }
 	}
-
 	
 	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
 		super.onScannedRobot(e);
-		if(!targetSet && enemyDataManager.allScanned){
-			setTarget();
-		}
+
 
 		if(!isTeammate(e.getName()) ){
-			System.out.println(enemy.name);
-
+			if(!targetSet && enemyDataManager.allScanned){
+				setTarget();
+			}
 			if(targetSet && target.equals(enemy.name)){
 				System.out.println("lockon!!!!!!!!");
-				move.setTarget(target);
-				gun.setTarget(target);
+				move.setTarget(enemy);
+				gun.setTarget(enemy);
 				lockon = true;
 				radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.radarHeading);
 			}
@@ -91,11 +90,9 @@ public class G13_Sub2 extends BaseRobot
 	
 	public void setTarget(){
 		target = enemyDataManager.setTarget();
-		System.out.println("target Set!!!!!!!!!");
+		System.out.println("target Set!!!!!!!!! " + target);
 
 		if(target != null){
-			move.setTarget(target);
-			gun.setTarget(target);
 			targetSet = true;
 		}
 	}
@@ -105,17 +102,15 @@ public class G13_Sub2 extends BaseRobot
 
 	public void onRobotDeath(RobotDeathEvent e){
 		super.onRobotDeath(e);
-		if(target.equals(e.getName())){
+		if(!isTeammate(e.getName())){
 			setTarget();
 		}
 	}
-
 	
 	@Override
 	public void onPaint(Graphics2D g){
 		super.onPaint(g);
 		move.onPaint(g);
-		g.setColor(Color.white);
-		g.drawString("Target: " + target, (int)my.x - 60 ,(int)my.y - 60);
+		gun.onPaint(g);
 	}
 }

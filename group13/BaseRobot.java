@@ -71,7 +71,7 @@ public class BaseRobot extends TeamRobot
 				mateMap.put(member, new MyRobot());
 			}
 		}
-
+		Util.enemies = getOthers() - 2;
 		Util.battleFieldWidth = getBattleFieldWidth();
 		Util.battleFieldHeight = getBattleFieldHeight();
 	}
@@ -83,6 +83,7 @@ public class BaseRobot extends TeamRobot
 		my.heading = getHeading();
 		my.headingRadians = getHeadingRadians();
 		my.gunHeading = getGunHeading();
+		my.gunHeadingRadians = getGunHeadingRadians();
 		my.radarHeading = getRadarHeading();
 		my.velocity = getVelocity();
 		my.energy = getEnergy();
@@ -101,7 +102,9 @@ public class BaseRobot extends TeamRobot
 	}	
 
 	public void onRobotDeath(RobotDeathEvent e){
-		enemyDataManager.onRobotDeath(e);
+		if(!isTeammate(e.getName()) ){
+			enemyDataManager.onRobotDeath(e);
+		}
 	}
 
 	public void onMessageReceived(MessageEvent e){
@@ -128,7 +131,7 @@ public class BaseRobot extends TeamRobot
 	// Paint a transparent square on top of the last scanned robot
     public void onPaint(Graphics2D g) {
 		try {
-			enemyDataManager.onPaint(g);
+			//enemyDataManager.onPaint(g);
 		} catch (RuntimeException e) {
 			//TODO: handle exception
 		}

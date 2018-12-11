@@ -1,5 +1,6 @@
 package group13;
 
+import group13.AntiWall;
 import group13.Point;
 import group13.RobotInfo;
 import group13.MyRobot;
@@ -20,20 +21,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class Gun{
     public  Map<String, Enemy> enemyMap = new HashMap<>(); 
-    public String target;
-    public Enemy targetRobot = new Enemy();
+    public Enemy targetRobot;
 
     public TeamRobot robot;
     public MyRobot my;
 
+    public Point nextPoint = new Point();
     private double gunTurnAmount;
     private double power;
     
     public static final int AIMTYPE_PINPOINT = 0;
     public static final int AIMTYPE_CONSTANT = 1;
+
+    private AntiWall antiWall = new AntiWall();
 
     public Gun(TeamRobot _robot, MyRobot _my,
         Map<String, Enemy> eMap) {
@@ -42,33 +44,46 @@ public class Gun{
             enemyMap = eMap;
     }
 
-    public void setTarget(String name){
-        target = name;
-        targetRobot = enemyMap.get(target);
+    public void setTarget(Enemy target){
+        //target = name;
+        targetRobot = new Enemy();
+        targetRobot = target;
     }
 
     public void execute() {
-        doGunTurn();
-        dofire();
+        if(targetRobot != null){
+            doGunTurn();
+            dofire();
+        }
     }
 
     public void doGunTurn() {
         gunTurnAmount = calcGunTurnRadians(my, targetRobot);
-        robot.setTurnRight(gunTurnAmount);
+        robot.setTurnGunRightRadians(gunTurnAmount);
     }
 
     public void dofire(){
         // do something
-
-        robot.setFire(power);
+        if(targetRobot.name.contains("Wall")){
+            if(!antiWall.holdFire)robot.setFire(3);
+        }else{   
+            if(targetRobot.distance < 200){
+                power = 2.5;
+            }else{
+                power = 0.1;
+            }
+            robot.setFire(power);
+        }
     }
 
     public double calcGunTurnRadians(MyRobot my, Enemy en){
         double amount = 0;
-        Point nextPoint = new Point();
-        nextPoint = setNextPoint();        
-        //do something
-
+        if(en.name.contains("Wall")){
+            amount = antiWall.prepareFire(my, en) * Math.PI / 360;
+        }else{
+        nextPoint = setNextPoint();
+        amount = Util.calcTurnRadians(my.gunHeadingRadians, my.calcRadians(nextPoint));
+        }
         return amount;
     }
 
@@ -99,11 +114,17 @@ public class Gun{
     }
 
     private Point pinpoint(){
-       return  new Point(targetRobot.x , targetRobot.y);
+        return  new Point(targetRobot.x , targetRobot.y);
     }
 
     /*
     private Point constant(){
 
     }*/
+
+    public void onPaint(Graphics2D g) {
+        g.setColor(Color.white);
+        if(targetRobot!=null)
+		g.drawString("Target: " + (int)targetRobot.distance + targetRobot.name, (int)my.x - 60 ,(int)my.y - 60);
+    }
 }

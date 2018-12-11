@@ -22,4 +22,5 @@ public class RobotInfo extends Point
     public double velocity;
     public double energy;
     public double heat;
+    public boolean alive;
 }

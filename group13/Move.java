@@ -26,7 +26,7 @@ public class Move
 {
     //weight
     protected  double WALL_WEIGHT            = 7000;
-    protected  double WALL_DIM               = 1.7;
+    protected  double WALL_DIM               = 2.7;
     protected  double ENEMY_WEIGHT           = 3000;
     protected  double ENEMY_DIM              = 2;
     protected  double MATE_WEIGHT            = 5000;
@@ -53,9 +53,8 @@ public class Move
             mateMap = mMap;
     }
 
-    public void setTarget(String name){
-        target = name;
-        targetRobot = enemyMap.get(target);
+    public void setTarget(Enemy target){
+        targetRobot = target;
     }
 
     public void execute(){
@@ -67,12 +66,13 @@ public class Move
         Point dst = new Point(my.x,my.y);
 
         //target 
-        if(my.calcDistance(targetRobot) > 100)
-        dst.add(Util.getGravity(new Point(my.x ,my.y) , new Point(targetRobot.x, targetRobot.y), 5000, 2));
+        if(targetRobot != null){
+            dst.add(Util.getGravity(new Point(my.x ,my.y) , new Point(targetRobot.x, targetRobot.y), 5000, 2));
+        }
 
         //dst.diff(Util.getRepulsion(my, new Point(Util.battleFieldWidth/2,Util.battleFieldHeight/2), 10000,WALL_DIM,1));
 
-        //Robot
+        //Wall
         dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(Util.battleFieldWidth,my.y), WALL_WEIGHT,WALL_DIM,1));
         dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(0,my.y), WALL_WEIGHT,WALL_DIM,1));
         dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(my.x,Util.battleFieldHeight), WALL_WEIGHT,WALL_DIM,1));
@@ -83,11 +83,14 @@ public class Move
             dst.diff(Util.getRepulsion(new Point(my.x, my.y) ,e.getValue(), MATE_WEIGHT,MATE_DIM,1));
         }
         
-        /*enemies
+        //enemies
         for (Map.Entry<String, Enemy> e : enemyMap.entrySet()) {
-            if(!e.getKey().equals(target)) //except target
-            dst.diff(Util.getRepulsion(new Point(my.x, my.y) ,e.getValue(), ENEMY_WEIGHT,ENEMY_DIM,1));
-        }*/
+            if(!e.getKey().equals(target)){ //except target
+                Enemy en = e.getValue();
+                if(en.alive)
+                dst.diff(Util.getRepulsion(new Point(my.x, my.y) ,e.getValue(), ENEMY_WEIGHT,ENEMY_DIM,1));
+            }
+        }
         return dst;
     }
 
@@ -138,7 +141,13 @@ public class Move
 
     public void onPaint(Graphics2D g){
         g.setColor(Color.green);
+        //destination
         g.drawOval((int)dst.x-5, (int)dst.y-5 ,10,10);
-        g.fillRect((int)targetRobot.x,(int)targetRobot.y,30,30);
+        
+        try {
+            g.fillRect((int)targetRobot.x,(int)targetRobot.y,30,30);            
+        } catch (Exception e) {
+            //TODO: handle exception
+        }
     }
 }

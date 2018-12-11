@@ -37,6 +37,9 @@ public class AntiWall
   	private double radarTurnAmount;
     private double gunTurnAmount;
 
+    public AntiWall(){
+    }
+
     public AntiWall(TeamRobot _robot, MyRobot _my){
         robot = _robot;
         my =_my;
@@ -71,8 +74,8 @@ public class AntiWall
         int aiming = aimingCorner(postX,postY);
         System.out.println("aim at :" + aiming);
         if( WALL_MOVETYPE != 0 && aiming!= -1 && !hitAtCorner(enemy,3,t)){
-             System.out.println("corner: false !!!!!");
-             holdFire = true;
+            System.out.println("corner: false !!!!!");
+            holdFire = true;
         }else{
             holdFire = false;
         }
@@ -80,9 +83,10 @@ public class AntiWall
         double gunTurnAmount;
 		// //decide gun turn amount according to wall's move type
         if(WALL_MOVETYPE==1 || WALL_MOVETYPE==2){
-			gunTurnAmount = Utils.normalRelativeAngleDegrees(Util.pointToDegree(my.x,my.y,postX,postY) - my.gunHeading);
+            gunTurnAmount = Utils.normalRelativeAngleDegrees(Util.pointToDegree(my.x,my.y,postX, postY) - my.gunHeading);
+            //gunTurnAmount = Utils.normalRelativeAngleRadians(Util.pointToRadian(my.x, my.y, postX, postY) - my.headingRadians);
 		}else{
-			gunTurnAmount = Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.gunHeading);
+            gunTurnAmount = Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.gunHeading);
         }
         return gunTurnAmount;
     }
