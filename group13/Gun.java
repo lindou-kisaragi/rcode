@@ -40,14 +40,16 @@ public class Gun{
     private AntiWall antiWall = new AntiWall();
 
     public BulletMapping bulletmapping;
-    public Estimation estimation = new Estimation(bulletmapping);
+    public Estimation estimation;
 
     public Gun(TeamRobot _robot, MyRobot _my,
         Map<String, Enemy> eMap,BulletMapping bulletMapping) {
             robot = _robot;
             my =_my;
             enemyMap = eMap;
+            bulletmapping = new BulletMapping(my);
             bulletmapping = bulletMapping;
+            estimation=new Estimation(bulletmapping);
     }
 
     public void setTarget(Enemy target){
@@ -59,10 +61,10 @@ public class Gun{
     public void execute() {
         if(targetRobot != null){
         int pattern;
-        //pattern = estimation.EstimationPattern(false);
+        pattern = estimation.EstimationPattern(false);
         doGunTurn();
         dofire();
-        //bulletmapping.FriendBulletGenerate(power,gunTurnAmount,pattern);
+        bulletmapping.FriendBulletGenerate(power,gunTurnAmount,pattern);
         }
     }
 

@@ -34,6 +34,7 @@ public class Estimation{
         x2=Softmax(2, isenemy);
         x3=Softmax(3, isenemy);
         omikuji=Math.random();
+        if(x1==1000||x2==1000||x3==1000)return 1;
         if(omikuji<x1){
             return 1;
         }else if(omikuji<x1+x2){
@@ -51,6 +52,7 @@ public class Estimation{
         x1=Sigmoid(1, isenemy);
         x2=Sigmoid(2, isenemy);
         x3=Sigmoid(3, isenemy);
+        if(x1==1000||x2==1000||x3==1000)return 1000;
         f=Math.exp(xa/alpha)/(Math.exp(x1/alpha)+Math.exp(x2/alpha)+Math.exp(x3/alpha));
         return f;
     }
@@ -58,13 +60,13 @@ public class Estimation{
         //double x[];//hitotu no pattern no subete no bullet data.0 or 1
         double xa=0;//sigmoid
         int ishit;
-        List<BulletInfo> x;
+        List<BulletInfo> x=new ArrayList<BulletInfo>();;
         if(isenemy){
             x=bulletmapping.returnbulletdata();
         }else{
             x=bulletmapping.returnbulletdatafriend();
         }
-        
+        if(x==null || x.size()==0)return 1000;
         for(int i=0;i<x.size();i++){//i ha jikan ni shita houga iikamo.
             if(x.get(i).pattern==pattern){
                 if(x.get(i).ishit==true){

@@ -40,6 +40,7 @@ public class BulletMapping
     //bulletmap.put(,);
     
     public void ShootObservation(Enemy enemy,Enemy prevenemy){
+        if(prevenemy==null)return;
         BulletInfo bullet=new BulletInfo();
         if(enemy.energy<prevenemy.energy){
             //shoot!!detect!

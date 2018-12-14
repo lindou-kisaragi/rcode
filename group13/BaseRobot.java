@@ -54,7 +54,7 @@ public class BaseRobot extends TeamRobot
 		if(!isTeammate(e.getName()) ){
 			enemy = new Enemy(my, e); 
 			Enemy prevEnemy = enemyMap.get(enemy.name);
-			//bulletmapping.ShootObservation(enemy, prevEnemy);
+			bulletmapping.ShootObservation(enemy, prevEnemy);
             enemyDataManager.ScannedRobot(enemy); //update enemy's info
             broadcastMessage(enemy);
 		}
