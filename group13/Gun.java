@@ -35,8 +35,8 @@ public class Gun{
     
     public static final int AIMTYPE_PINPOINT = 0;
     public static final int AIMTYPE_CONSTANT = 1;
-    public static final int AIMTYPE_ACCELE = 2;
-    public static final int AIMTYPE_CIRCLE = 3;
+
+
     private AntiWall antiWall = new AntiWall();
 
     public BulletMapping bulletmapping;
@@ -87,42 +87,38 @@ public class Gun{
 
     public double calcGunTurnRadians(MyRobot my, Enemy en){
         double amount = 0;
+        
         if(en.name.contains("Wall")){
             amount = antiWall.prepareFire(my, en) * Math.PI / 360;
         }else{
         nextPoint = setNextPoint();
         amount = Util.calcTurnRadians(my.gunHeadingRadians, my.calcRadians(nextPoint));
         }
+        
         return amount;
     }
 
     public Point setNextPoint(){
         int aimType = 0;
         aimType = setNextAimType();
-        Point nextPoint = new Point();
+        Point p = new Point();
         switch (aimType) {
             case AIMTYPE_PINPOINT:
-                nextPoint = pinpoint();
+                p = pinpoint();
                 break;
             case AIMTYPE_CONSTANT:
-                //nextPoint = constant();
-                break;
-            case AIMTYPE_ACCELE:
-                //nextPoint = Accele();
-                break;
-            case AIMTYPE_CIRCLE:
-                //nextPoint = Circle();
+                p = constant();
                 break;
             default:
-                nextPoint = pinpoint();
+                p = pinpoint();
                 break;
         }
 
-        return nextPoint;
+        return p;
     }
 
     public int setNextAimType() {
-        int aimType = 0;
+        int aimType = 1;
         // decide aimtype using softmax.....
 
         return aimType;
@@ -132,21 +128,28 @@ public class Gun{
         return  new Point(targetRobot.x , targetRobot.y);
     }
 
-    /*
     private Point constant(){
-    }*/
-    /*
-    private Point Accele(){
+        double t = calcTimeToReach(my, targetRobot, targetRobot.velocity, 2.5);
+        double x = targetRobot.x + targetRobot.velocity*Math.sin(targetRobot.headingRadians)*t;
+        double y = targetRobot.y + targetRobot.velocity*Math.cos(targetRobot.headingRadians)*t;
+        return new Point(x,y);
+    }
 
-    }*/
-
-    /*
-    private Point Circle(){  
-    }*/
+    public  double calcTimeToReach
+    ( MyRobot my, Enemy en, double v, double p){
+        double t; //time to reach bullet to enemy(including turning gun)
+        double s = Util.bulletSpeed(p);
+        t = Util.solveEquation((v*v - s*s),
+        2*v*(en.x-my.x)*Math.sin(en.headingRadians) + 2*v*(en.y-my.y)*Math.cos(en.headingRadians),
+        (en.x-my.x)*(en.x-my.x)+(en.y-my.y)*(en.y-my.y) );
+        return t;
+    }
 
     public void onPaint(Graphics2D g) {
         g.setColor(Color.white);
         if(targetRobot!=null)
-		g.drawString("Target: " + (int)targetRobot.distance + targetRobot.name, (int)my.x - 60 ,(int)my.y - 60);
+        g.drawString("Target: " + (int)targetRobot.distance + targetRobot.name, (int)my.x - 60 ,(int)my.y - 60);
+        g.setColor(Color.red);
+        g.drawOval((int)nextPoint.x-5, (int)nextPoint.y-5 ,10,10);
     }
 }

@@ -33,7 +33,7 @@ public class Util
     }   
 
     public static Point getGravity(Point base,Point target,double weight,double dim){
-        return getGravity(base,target,weight,dim,18); //tankwidth is 18
+        return getGravity(base,target,weight,dim,0); //tankwidth is 18
     }
 
     //
@@ -113,7 +113,23 @@ public class Util
         velocity = Math.abs(velocity);
         return (distance/velocity);
     }
-    
+
+    public static double solveEquation(double a, double b, double c){
+        double ans1 =( -b + Math.sqrt(b*b - 4*a*c))/(2*a);
+        double ans2 =( -b - Math.sqrt(b*b - 4*a*c))/(2*a);
+        //System.out.println("a:" + a + "b:" + b + "c:" + c);  
+        //System.out.println("ans1:" + ans1 + "ans2:" + ans2);
+
+        //note: either of answer must be minus
+        if(ans1 > ans2) return ans1;
+        if(ans2 > ans1) return ans2;
+        return 0;
+    }
+
+    public static double bulletSpeed(double power){
+        return (20 - 3 * power);
+    }
+
     public static boolean isLastShot(double power ,double energy){
         double damage = 0;
         if(power > 1.0){
