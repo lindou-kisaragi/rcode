@@ -1,0 +1,7 @@
+#Robocode robot team
+#Tue Nov 20 23:14:28 JST 2018
+team.description=AntiGravitybot's Team
+robocode.version=1.9.3.3
+team.author.name=
+team.version=1.0
+team.members=nic.AntiGravity_Leader*,nic.AntiGravity_Sub1*,nic.AntiGravity_Sub2*

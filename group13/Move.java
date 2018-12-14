@@ -71,7 +71,7 @@ public class Move
         }
 
         //dst.diff(Util.getRepulsion(my, new Point(Util.battleFieldWidth/2,Util.battleFieldHeight/2), 10000,WALL_DIM,1));
-
+        
         //Wall
         dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(Util.battleFieldWidth,my.y), WALL_WEIGHT,WALL_DIM,1));
         dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(0,my.y), WALL_WEIGHT,WALL_DIM,1));
@@ -145,7 +145,8 @@ public class Move
         g.drawOval((int)dst.x-5, (int)dst.y-5 ,10,10);
         
         try {
-            g.fillRect((int)targetRobot.x,(int)targetRobot.y,30,30);            
+            //target bot's position
+            //g.fillRect((int)targetRobot.x,(int)targetRobot.y,30,30);            
         } catch (Exception e) {
             //TODO: handle exception
         }

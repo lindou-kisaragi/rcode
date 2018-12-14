@@ -69,7 +69,7 @@ public class AntiWall
 		t = calcTimeToReach(my ,enemy, enemy.headingRadians);
 		double postX = postEnemyPositionX(enemy, t);
 		double postY = postEnemyPositionY(enemy, t);
-        double bulletRadian = calcGunTurnRadian(my ,enemy ,t);	
+        //double bulletRadian = calcGunTurnRadian(my ,enemy ,t);	
 
         int aiming = aimingCorner(postX,postY);
         System.out.println("aim at :" + aiming);
