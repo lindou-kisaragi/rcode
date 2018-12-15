@@ -35,7 +35,8 @@ public class Gun{
     
     public static final int AIMTYPE_PINPOINT = 0;
     public static final int AIMTYPE_CONSTANT = 1;
-
+    public static final int AIMTYPE_ACCELE = 2;
+    public static final int AIMTYPE_CIRCLE = 3;
 
     private AntiWall antiWall = new AntiWall();
 
@@ -63,6 +64,7 @@ public class Gun{
         int pattern;
         pattern = estimation.EstimationPattern(false);
         doGunTurn();
+        prepareFiring();
         dofire();
         bulletmapping.FriendBulletGenerate(power,gunTurnAmount,pattern);
         }
@@ -73,17 +75,42 @@ public class Gun{
         robot.setTurnGunRightRadians(gunTurnAmount);
     }
 
+    List<Bullet> bulletList = new ArrayList<Bullet>();
     public void dofire(){
-        // do something
+        //for Wall bot
         if(targetRobot.name.contains("Wall")){
-            if(!antiWall.holdFire)robot.setFire(3);
-        }else{   
+            if(!antiWall.holdFire){
+                Bullet bullet = robot.setFireBullet(3);
+                if(bullet != null)bulletList.add(bullet);
+            }
+        }else{ //for normal bot
             if(targetRobot.distance < 200){
                 power = 2.5;
             }else{
                 power = 0.1;
             }
-            robot.setFire(power);
+            Bullet bullet = robot.setFireBullet(power);
+            if(bullet != null)bulletList.add(bullet);
+        }
+                
+        for(Bullet b:bulletList){
+            System.out.println("b:" + b.hashCode() + ","  + b.isActive());
+        }
+    }
+
+    public void onBulletHit(BulletHitEvent e) {
+        Bullet hitbullet = e.getBullet();
+
+        //get bullet in bulletList that hit enemy by either ways
+        for(Bullet b:bulletList){
+            if(b.equals(hitbullet)){
+                System.out.println("hit!!!!!!!!!!!!!!!!!!!!!!!!!!!" + e.getName());
+                bulletList.remove(b);
+            }
+            if(b.hashCode() == (hitbullet.hashCode())){
+                System.out.println("hit!!!!!!!!!!!!!!!!!!!!!!!!!!!" + e.getName() );
+                bulletList.remove(b);
+            }
         }
     }
 
@@ -93,8 +120,8 @@ public class Gun{
         if(en.name.contains("Wall")){
             amount = antiWall.prepareFire(my, en) * Math.PI / 360;
         }else{
-        nextPoint = setNextPoint();
-        amount = Util.calcTurnRadians(my.gunHeadingRadians, my.calcRadians(nextPoint));
+            nextPoint = setNextPoint();
+            amount = Util.calcTurnRadians(my.gunHeadingRadians, my.calcRadians(nextPoint));
         }
         
         return amount;
@@ -111,6 +138,9 @@ public class Gun{
             case AIMTYPE_CONSTANT:
                 p = constant();
                 break;
+            case AIMTYPE_CIRCLE:
+                p = circle();
+                break;
             default:
                 p = pinpoint();
                 break;
@@ -120,17 +150,17 @@ public class Gun{
     }
 
     public int setNextAimType() {
-        int aimType = 1;
+        int aimType = 3;
         // decide aimtype using softmax.....
 
         return aimType;
     }
 
-    private Point pinpoint(){
+    public Point pinpoint(){
         return  new Point(targetRobot.x , targetRobot.y);
     }
 
-    private Point constant(){
+    public Point constant(){
         double t = calcTimeToReach(my, targetRobot, targetRobot.velocity, 2.5);
         double x = targetRobot.x + targetRobot.velocity*Math.sin(targetRobot.headingRadians)*t;
         double y = targetRobot.y + targetRobot.velocity*Math.cos(targetRobot.headingRadians)*t;
@@ -147,11 +177,55 @@ public class Gun{
         return t;
     }
 
+    List<Point> ps = new ArrayList<Point>();
+    public Point circle(){
+        double enemyHeading = targetRobot.headingRadians;
+        Point p = new Point(targetRobot.x, targetRobot.y);
+        int deltaTime = 0;
+        ps.clear();
+
+        while((++deltaTime) * Util.bulletSpeed(power)< 
+            my.calcDistance(p)){	
+            p.x += Math.sin(enemyHeading) * targetRobot.velocity;
+            p.y += Math.cos(enemyHeading) * targetRobot.velocity;
+            ps.add(new Point(p.x, p.y));
+            enemyHeading += enemyHeadingChange;
+           if(Util.outOfBattleField(p)){
+                p.x = Math.min(Math.max(18.0, p.x), Util.battleFieldWidth - 18.0);	
+                p.y = Math.min(Math.max(18.0, p.y), Util.battleFieldHeight - 18.0);
+                break;
+            }
+        }
+        return p;
+    }
+    double enemyHeadingChange;
+    double oldEnemyHeading;
+    private void prepareFiring(){
+        enemyHeadingChange = targetRobot.headingRadians - oldEnemyHeading;
+        System.out.println("(Gun)" +enemyHeadingChange);
+        oldEnemyHeading = targetRobot.headingRadians;
+    }
+    
+
     public void onPaint(Graphics2D g) {
         g.setColor(Color.white);
         if(targetRobot!=null)
         g.drawString("Target: " + (int)targetRobot.distance + targetRobot.name, (int)my.x - 60 ,(int)my.y - 60);
-        g.setColor(Color.red);
+        g.setColor(Color.pink);
         g.drawOval((int)nextPoint.x-5, (int)nextPoint.y-5 ,10,10);
+
+        //predicted points by circle()
+        /*
+        for(Point p: ps){
+            //g.drawString("" + (int)ps.size(),(int)p.x-5, (int)p.y-5);
+            g.drawOval((int)p.x-5, (int)p.y-5 ,10,10);
+        }*/
+
+        //bullet fired by this robot
+        for(Bullet b:bulletList){
+            if(b.isActive())
+            g.drawOval((int)b.getX()-5, (int)b.getY()-5 ,10,10);
+        }
+        
     }
 }
