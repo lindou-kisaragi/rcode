@@ -6,7 +6,7 @@ import java.lang.*;
 /**
  * MyClass - a class by (your name here)
  */
-public class RobotInfo extends Point
+public class BulletInfo extends Point
 {
     public long time;
     public String name;
