@@ -74,16 +74,15 @@ public class Gun{
 
     public void dofire(){
         // do something
-        Bullet bullet=new Bullet(0,0,0,0,null,null,true,0);
         if(targetRobot.name.contains("Wall")){
-            if(!antiWall.holdFire)bullet=robot.fireBullet(3);
+            if(!antiWall.holdFire)robot.setFire(3);
         }else{   
             if(targetRobot.distance < 200){
                 power = 2.5;
             }else{
                 power = 0.1;
             }
-            bullet= robot.fireBullet(power);
+            robot.setFire(power);
         }
         System.out.println(bullet);
         bulletmapping.FriendBulletGenerate(power,gunTurnAmount,aimType,bullet);
@@ -123,7 +122,7 @@ public class Gun{
     }
 
     public int setNextAimType() {
-        int pattern = 0;
+        int aimType = 1;
         // decide aimtype using softmax.....
         pattern = estimation.EstimationPattern(false);
         return aimType;
