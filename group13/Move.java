@@ -121,7 +121,7 @@ public class Move
         double aheadTurnRadians = Util.calcTurnRadians(my.headingRadians,dstRadians);
         double backTurnRadians  = Util.calcTurnRadians(my.headingRadians,dstRadians-Math.PI);
 
-        System.out.println("1:" + aheadTurnRadians + "2:" +my.calcRadians(dst));
+        //System.out.println("1:" + aheadTurnRadians + "2:" +my.calcRadians(dst));
         //my.headingRadians.calcRadians(dstRadians);
 
         if ( Math.abs(aheadTurnRadians) < Math.abs(backTurnRadians)) { // ahead
@@ -143,7 +143,7 @@ public class Move
         g.setColor(Color.green);
         //destination
         g.drawOval((int)dst.x-5, (int)dst.y-5 ,10,10);
-        
+
         try {
             //target bot's position
             //g.fillRect((int)targetRobot.x,(int)targetRobot.y,30,30);            

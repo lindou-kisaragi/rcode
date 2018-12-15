@@ -44,8 +44,6 @@ public class BaseRobot extends TeamRobot
 		setBodyColor(Color.white);
 		setGunColor(Color.white);
 		setRadarColor(Color.white);
-		setBulletColor(Color.cyan);
-		setScanColor(Color.cyan);
 		initRound();
 
 		// setColors(Color.red,Color.blue,Color.green); // body,gun,radar
@@ -144,11 +142,13 @@ public class BaseRobot extends TeamRobot
 			//TODO: handle exception
 		}
 		
+		//Gun heading
         g.setColor(Color.red);
 	    g.drawLine((int)getX(), (int)getY(), 
 	    (int)(Math.sin(getGunHeadingRadians()) * 800 + getX()),(int)(Math.cos(getGunHeadingRadians()) * 800 + getY())
 	    );
 
+		//heading
 	    g.setColor(Color.cyan);
 	    g.drawLine((int)getX(), (int)getY(), 
 	    (int)(Math.sin(getHeadingRadians()) * 800 + getX()),(int)(Math.cos(getHeadingRadians()) * 800 + getY())

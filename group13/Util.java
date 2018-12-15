@@ -11,6 +11,12 @@ public class Util
     public static double battleFieldWidth;
     public static double battleFieldHeight;
 
+    public static boolean outOfBattleField(Point p){
+        if(	p.x < 18.0 || p.y < 18.0 || p.x > battleFieldWidth - 18.0 || p.y > battleFieldHeight - 18.0){
+            return true;
+        }
+        return false;
+    }
     
     public static  Point calcPoint(double radians, double distance){
         double x = Math.sin(radians) * distance;

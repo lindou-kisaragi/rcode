@@ -70,7 +70,7 @@ public class G13_Sub1 extends BaseRobot
 			execute();
 		  }
 	}
-	
+	List<Double> vl = new ArrayList<Double>();
 	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
 		super.onScannedRobot(e);
@@ -82,6 +82,11 @@ public class G13_Sub1 extends BaseRobot
 
 			if(targetSet && target.equals(enemy.name)){
 				System.out.println("lockon!!!!!!!!");
+				/*
+				vl.add(enemy.velocity);
+				for(double v:vl){
+					System.out.println("v:" + v);
+				}*/
 				move.setTarget(enemy);
 				gun.setTarget(enemy);
 				lockon = true;
@@ -98,6 +103,11 @@ public class G13_Sub1 extends BaseRobot
 		if(target != null){
 			targetSet = true;
 		}
+	}
+
+	
+	public void onBulletHit(BulletHitEvent e){
+		gun.onBulletHit(e);
 	}
 
 	public void searchEnemy(String target) {
