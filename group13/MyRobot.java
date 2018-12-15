@@ -13,5 +13,6 @@ import java.lang.*;
 public class MyRobot extends RobotInfo
 {
     public double gunHeading;
+    public double gunHeadingRadians;
     public double radarHeading;
 }

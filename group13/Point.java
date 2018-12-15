@@ -29,9 +29,13 @@ public class Point implements Serializable{
     }
 
     public double calcDistance(Point dst) {
-        return Util.calcDistance(this.x,this.y,dst.x,dst.y);
+        return Util.calcDistance(this, dst);
     }
     public double calcRadians(Point dst) {
         return Util.calcRadians((dst.x-this.x),(dst.y-this.y));
+    }
+
+    public void log() {
+        System.out.println("Point" + this.x + "," + this.y );
     }
 }
