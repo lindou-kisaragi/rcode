@@ -31,4 +31,5 @@ public class BulletInfo{
     public double myx,myy;
     public int pattern;//1:tousoku 2:toukasoku 3:other
     public boolean ishit;//yosou ga seikai ka
+    public Bullet bullet;//mikata nomi
 }

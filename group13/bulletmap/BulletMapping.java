@@ -61,15 +61,10 @@ public class BulletMapping
         bulletmap.add(bullet);
     }
     public void BulletDelete(){//jyouji jikkou hissu!!!
-        for(int i=0;i<bulletmap.size()-1;i++){
-            if(bulletmap.get(i).t*bulletmap.get(i).speed>Util.battleFieldWidth*1.4142){
-                bulletmap.get(i).ishit=false;
-                BulletInfo bullet=new BulletInfo();
-                bullet=deepcopy(bulletmap.get(i));
-                bulletmap.remove(i);
-                i=i-1;
-            }
-        }
+                //bulletmap.get(i).ishit=false;
+                //BulletInfo bullet=new BulletInfo();
+                //bullet=deepcopy(bulletmap.get(i));
+                //bulletmap.remove(i);
     }
     public double BulletRadiusShort(int i){
         return (bulletmap.get(i).speed*(my.time-bulletmap.get(i).t));
@@ -80,7 +75,7 @@ public class BulletMapping
     public double Distance(int i){
         return Math.pow(Math.pow(bulletmap.get(i).x-my.x,2)+Math.pow(bulletmap.get(i).x-my.x,2), 0.5);
     }
-    public void FriendBulletGenerate(double power,double gunTurnAmount,int pattern){
+    public void FriendBulletGenerate(double power,double gunTurnAmount,int pattern,Bullet bulletobj){
         BulletInfo bullet=new BulletInfo();
         bullet.prex=my.x;
         bullet.prey=my.y;
@@ -93,7 +88,7 @@ public class BulletMapping
         bullet.t=my.time;
         bullet.angle1=gunTurnAmount;
         bullet.angle2=gunTurnAmount;
-
+        bullet.bullet=bulletobj;
         bulletmapfriend.add(bullet);
     }
     public void FriendBulletMove(int i){//atode setuzoku//jyouji jikkou!!!!!
@@ -175,11 +170,28 @@ public class BulletMapping
             }
         }
         bullet=deepcopy(bulletmap.get(j));
-        bullet.angle1=CalculateAngle1(bullet);
-        bullet.angle2=CalculateAngle2(bullet);
+        //bullet.angle1=CalculateAngle1(bullet);
+        //bullet.angle2=CalculateAngle2(bullet);
+        
+        if (bullet==null)return;
         bullet.ishit=true;
 
         bulletdata.add(bullet);
+        bulletmap.remove(j);
+    }
+    public void InputBulletDataFriend(boolean isHit,Bullet bulletobj){
+        int i=0;
+        BulletInfo bullet=new BulletInfo();
+        for(i=0;i<bulletmapfriend.size();i++){
+            System.out.println(bulletmapfriend.get(i).bullet);
+            if(bulletmapfriend.get(i).bullet.equals(bulletobj)){
+                bulletmapfriend.get(i).ishit=isHit;
+                break;
+            }
+        }
+        bullet=deepcopy(bulletmapfriend.get(i));
+        bulletdatafriend.add(bullet);
+        bulletmapfriend.remove(i);
     }
     public List<BulletInfo> returnbulletmap(){
         return bulletmap;

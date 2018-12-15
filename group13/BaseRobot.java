@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+
 // API help : http://robocode.sourceforge.net/docs/robocode/robocode/Robot.html
 
 /**
@@ -44,6 +46,8 @@ public class BaseRobot extends TeamRobot
 		setBodyColor(Color.white);
 		setGunColor(Color.white);
 		setRadarColor(Color.white);
+		setBulletColor(Color.cyan);
+		setScanColor(Color.cyan);
 		initRound();
 
 		// setColors(Color.red,Color.blue,Color.green); // body,gun,radar
@@ -124,7 +128,18 @@ public class BaseRobot extends TeamRobot
 			mateMap.put(mate.name ,mate);
 		}
     }
-    
+    public void onBulletHit(BulletHitEvent e){
+		Bullet bulletobj=e.getBullet();
+		bulletmapping.InputBulletDataFriend(true,bulletobj);
+	}
+    public void onBulletHitBullet(BulletHitEvent e){//koko false or true you tyousei!!
+		Bullet bulletobj=e.getBullet();
+		bulletmapping.InputBulletDataFriend(false,bulletobj);
+	}
+	public void onBulletMissed(BulletHitEvent e){
+		Bullet bulletobj=e.getBullet();
+		bulletmapping.InputBulletDataFriend(false,bulletobj);
+	}	
     @Override
     public void broadcastMessage(Serializable s ){
         try {
@@ -142,13 +157,11 @@ public class BaseRobot extends TeamRobot
 			//TODO: handle exception
 		}
 		
-		//Gun heading
         g.setColor(Color.red);
 	    g.drawLine((int)getX(), (int)getY(), 
 	    (int)(Math.sin(getGunHeadingRadians()) * 800 + getX()),(int)(Math.cos(getGunHeadingRadians()) * 800 + getY())
 	    );
 
-		//heading
 	    g.setColor(Color.cyan);
 	    g.drawLine((int)getX(), (int)getY(), 
 	    (int)(Math.sin(getHeadingRadians()) * 800 + getX()),(int)(Math.cos(getHeadingRadians()) * 800 + getY())

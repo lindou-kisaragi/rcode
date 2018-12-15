@@ -34,7 +34,9 @@ public class Estimation{
         x2=Softmax(2, isenemy);
         x3=Softmax(3, isenemy);
         omikuji=Math.random();
-        if(x1==1000||x2==1000||x3==1000)return 1;
+        if(x1==1000||x1==0)return 1;
+        if(x2==1000||x2==0)return 2;
+        if(x3==1000||x3==0)return 3;
         if(omikuji<x1){
             return 1;
         }else if(omikuji<x1+x2){
