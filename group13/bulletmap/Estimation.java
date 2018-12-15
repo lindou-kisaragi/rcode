@@ -24,6 +24,7 @@ import java.util.Map;
 
 public class Estimation{
     BulletMapping bulletmapping;
+    int xlog;
     public Estimation(BulletMapping bulletMapping){
         bulletmapping=bulletMapping;
     }
@@ -68,18 +69,33 @@ public class Estimation{
         }else{
             x=bulletmapping.returnbulletdatafriend();
         }
-        if(x==null || x.size()==0)return 1000;
-        for(int i=0;i<x.size();i++){//i ha jikan ni shita houga iikamo.
-            if(x.get(i).pattern==pattern){
-                if(x.get(i).ishit==true){
-                    ishit=1;
-                }else{
-                    ishit=0;
+        
+        xlog=x;
+        try{
+            if(x==null)return 1000;
+        else if( x.size()==0)return 1000;
+        else{
+            for(int i=0;i<x.size();i++){//i ha jikan ni shita houga iikamo.
+                System.out.println(x);
+                if(x.get(i).pattern==pattern){
+                    if(x.get(i).ishit==true){
+                        ishit=1;
+                    }else{
+                        ishit=0;
+                    }
+                    xa=xa+1/2*ishit*(Math.tanh((x.size()-i+1.5)/7)+1);//tyousetu hituyou    
                 }
-                xa=xa+1/2*ishit*(Math.tanh((x.size()-i+1.5)/7)+1);//tyousetu hituyou    
+            }   
             }
         }
+        catch(NullPointerException e){
+            System.err.println(x);
+        }
         return xa;
+    }
+    
+    public List<BulletInfo> log(){
+        return xlog;
     }
     /*
     public double EstimationAngleEnemy(int i,int pattern,double accel,double speed,double angle){//mikansei

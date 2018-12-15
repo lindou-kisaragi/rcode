@@ -40,6 +40,9 @@ public class BaseRobot extends TeamRobot
 	
 	public BulletMapping bulletmapping = new BulletMapping(my);
 	
+	
+	public Gun gun = new Gun(this, my, enemyMap, bulletmapping);
+
 	public void run() {
 		// Initialization of the robot should be put here
 
@@ -129,8 +132,7 @@ public class BaseRobot extends TeamRobot
 		}
     }
     public void onBulletHit(BulletHitEvent e){
-		Bullet bulletobj=e.getBullet();
-		bulletmapping.InputBulletDataFriend(true,bulletobj);
+		gun.onBulletHit(e);
 	}
     public void onBulletHitBullet(BulletHitEvent e){//koko false or true you tyousei!!
 		Bullet bulletobj=e.getBullet();

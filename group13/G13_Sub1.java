@@ -41,7 +41,7 @@ public class G13_Sub1 extends BaseRobot
 	private double radarTurnAmount;
 
 	public Move move = new Move(this, my, enemyMap, mateMap);
-	public Gun gun = new Gun(this, my, enemyMap, bulletmapping);
+	//public Gun gun = new Gun(this, my, enemyMap, bulletmapping);
 	
 	public boolean lockon;
 	public String target;
@@ -99,7 +99,10 @@ public class G13_Sub1 extends BaseRobot
 			targetSet = true;
 		}
 	}
-
+	/*
+	public void onBulletHit(BulletHitEvent e){
+		gun.onBulletHit(e);
+	}*/
 	public void searchEnemy(String target) {
 	}
 

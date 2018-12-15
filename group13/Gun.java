@@ -44,6 +44,8 @@ public class Gun{
     public BulletMapping bulletmapping;
     public Estimation estimation;
 
+    
+    int aimType = 0;
 
     public Gun(TeamRobot _robot, MyRobot _my,
         Map<String, Enemy> eMap,BulletMapping bulletMapping) {
@@ -74,13 +76,14 @@ public class Gun{
         robot.setTurnGunRightRadians(gunTurnAmount);
     }
 
-    List<Bullet> bulletList = new ArrayList<Bullet>();
+    //List<Bullet> bulletList = new ArrayList<Bullet>();
     public void dofire(){
         //for Wall bot
+        Bullet bullet=new Bullet(0,0,0,0,null,null,true,0);
         if(targetRobot.name.contains("Wall")){
             if(!antiWall.holdFire){
-                Bullet bullet = robot.setFireBullet(3);
-                if(bullet != null)bulletList.add(bullet);
+                bullet = robot.setFireBullet(3);
+                //if(bullet != null)bulletList.add(bullet);
             }
         }else{
             if(targetRobot.distance < 200){
@@ -88,27 +91,29 @@ public class Gun{
             }else{
                 power = 0.1;
             }
-            Bullet bullet= robot.setFireBullet(power);
-            if(bullet != null)bulletList.add(bullet);
+            bullet= robot.setFireBullet(power);
+            //if(bullet != null)bulletList.add(bullet);
         }
-        for(Bullet b:bulletList){	
-            System.out.println("b:" + b.hashCode() + "," + b.isActive());	
-            }	
-            }	
-            public void onBulletHit(BulletHitEvent e) {	
-            Bullet hitbullet = e.getBullet();	
-            //get bullet in bulletList that hit enemy by either ways	
-            for(Bullet b:bulletList){	
+        //for(Bullet b:bulletList){	
+          //  System.out.println("b:" + b.hashCode() + "," + b.isActive());	
+            //}	
+            if(bullet != null)bulletmapping.FriendBulletGenerate(power,gunTurnAmount,aimType,bullet);
+    }	
+    public void onBulletHit(BulletHitEvent e) {	
+        /*Bullet hitbullet = e.getBullet();*/	
+        //get bullet in bulletList that hit enemy by either ways
+        Bullet bulletobj=e.getBullet();
+		bulletmapping.InputBulletDataFriend(true,bulletobj);	
+        /*for(Bullet b:bulletList){	
             if(b.equals(hitbullet)){	
             System.out.println("hit!!!!!!!!!!!!!!!!!!!!!!!!!!!" + e.getName());	
             bulletList.remove(b);	
             }	
             if(b.hashCode() == (hitbullet.hashCode())){	
             System.out.println("hit!!!!!!!!!!!!!!!!!!!!!!!!!!!" + e.getName() );	
-                            bulletList.remove(b);	
-            }	}
+            bulletList.remove(b);	
             }
-        bulletmapping.FriendBulletGenerate(power,gunTurnAmount,aimType,bullet);
+        }*/
     }
 
     public double calcGunTurnRadians(MyRobot my, Enemy en){
@@ -128,6 +133,7 @@ public class Gun{
         aimType = setNextAimType();
         System.out.println(aimType);
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        
         Point p = new Point();
         switch (aimType) {
             case AIMTYPE_PINPOINT:
@@ -135,6 +141,9 @@ public class Gun{
                 break;
             case AIMTYPE_CONSTANT:
                 p = constant();
+                break;
+            case AIMTYPE_CIRCLE:
+                p = circle();
                 break;
             default:
                 p = pinpoint();
@@ -147,7 +156,9 @@ public class Gun{
     public int setNextAimType() {
         int aimType = 3;
         // decide aimtype using softmax.....
-        pattern = estimation.EstimationPattern(false);
+        System.out.println(estimation.log());
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        aimType = estimation.EstimationPattern(false);
         return aimType;
     }
 
@@ -212,9 +223,9 @@ public class Gun{
         g.drawOval((int)p.x-5, (int)p.y-5 ,10,10);	
         }*/	
         //bullet fired by this robot	
-        for(Bullet b:bulletList){	
-            if(b.isActive())	
-                g.drawOval((int)b.getX()-5, (int)b.getY()-5 ,10,10);	
+        for(BulletInfo b:bulletmapping.returnbulletdata()){	
+            if(b.bullet.isActive())	
+                g.drawOval((int)b.bullet.getX()-5, (int)b.bullet.getY()-5 ,10,10);	
         }
     }
 }

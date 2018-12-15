@@ -184,7 +184,7 @@ public class BulletMapping
         BulletInfo bullet=new BulletInfo();
         for(i=0;i<bulletmapfriend.size();i++){
             System.out.println(bulletmapfriend.get(i).bullet);
-            if(bulletmapfriend.get(i).bullet.equals(bulletobj)){
+            if(bulletmapfriend.get(i).bullet.equals(bulletobj)||bulletmapfriend.get(i).hashCode() == (bulletobj.hashCode())){
                 bulletmapfriend.get(i).ishit=isHit;
                 break;
             }
