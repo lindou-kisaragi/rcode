@@ -132,15 +132,13 @@ public class BaseRobot extends TeamRobot
 		}
     }
     public void onBulletHit(BulletHitEvent e){
-		gun.onBulletHit(e);
+		gun.onBulletHit(e,true);
 	}
     public void onBulletHitBullet(BulletHitEvent e){//koko false or true you tyousei!!
-		Bullet bulletobj=e.getBullet();
-		bulletmapping.InputBulletDataFriend(false,bulletobj);
+		gun.onBulletHit(e,false);
 	}
 	public void onBulletMissed(BulletHitEvent e){
-		Bullet bulletobj=e.getBullet();
-		bulletmapping.InputBulletDataFriend(false,bulletobj);
+		gun.onBulletHit(e,false);
 	}	
     @Override
     public void broadcastMessage(Serializable s ){

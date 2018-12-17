@@ -67,7 +67,7 @@ public class Gun{
         if(targetRobot != null){
         doGunTurn();
         prepareFiring();
-        dofire();
+        if(my.heat == 0)dofire();
         }
     }
 
@@ -97,13 +97,22 @@ public class Gun{
         //for(Bullet b:bulletList){	
           //  System.out.println("b:" + b.hashCode() + "," + b.isActive());	
             //}	
-            if(bullet != null)bulletmapping.FriendBulletGenerate(power,gunTurnAmount,aimType,bullet);
+            
+            System.out.println("dofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireended");
+            
+            System.out.println("dofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireended");
+            
+            System.out.println("dofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireended");
+        
+            System.out.println("dofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireended");
+            if(bullet != null && bullet.hashCode()!=0){bulletmapping.FriendBulletGenerate(power,gunTurnAmount,aimType,bullet);System.out.println(bullet);}
     }	
-    public void onBulletHit(BulletHitEvent e) {	
+    public void onBulletHit(BulletHitEvent e,boolean ishit) {	
         /*Bullet hitbullet = e.getBullet();*/	
         //get bullet in bulletList that hit enemy by either ways
         Bullet bulletobj=e.getBullet();
-		bulletmapping.InputBulletDataFriend(true,bulletobj);	
+        System.out.println(bulletobj);
+		bulletmapping.InputBulletDataFriend(ishit,bulletobj);
         /*for(Bullet b:bulletList){	
             if(b.equals(hitbullet)){	
             System.out.println("hit!!!!!!!!!!!!!!!!!!!!!!!!!!!" + e.getName());	
@@ -154,9 +163,7 @@ public class Gun{
     }
 
     public int setNextAimType() {
-        int aimType = 3;
         // decide aimtype using softmax.....
-        System.out.println(estimation.log());
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         aimType = estimation.EstimationPattern(false);
         return aimType;

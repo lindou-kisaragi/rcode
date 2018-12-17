@@ -76,6 +76,8 @@ public class BulletMapping
         return Math.pow(Math.pow(bulletmap.get(i).x-my.x,2)+Math.pow(bulletmap.get(i).x-my.x,2), 0.5);
     }
     public void FriendBulletGenerate(double power,double gunTurnAmount,int pattern,Bullet bulletobj){
+        System.out.println("generate!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
+        System.out.println(bulletobj);
         BulletInfo bullet=new BulletInfo();
         bullet.prex=my.x;
         bullet.prey=my.y;
@@ -90,6 +92,7 @@ public class BulletMapping
         bullet.angle2=gunTurnAmount;
         bullet.bullet=bulletobj;
         bulletmapfriend.add(bullet);
+        System.out.println(bulletobj);
     }
     public void FriendBulletMove(int i){//atode setuzoku//jyouji jikkou!!!!!
         double x,y,speed,power,t,t2,xnow,ynow,directionx,directiony,gunTurnAmount;//x,y ga hassya iti, t ga hassya jikoku, t2 ga genzai
@@ -176,21 +179,21 @@ public class BulletMapping
         if (bullet==null)return;
         bullet.ishit=true;
 
-        bulletdata.add(bullet);
+        bulletdata.add(bulletmap.get(j));
         bulletmap.remove(j);
     }
     public void InputBulletDataFriend(boolean isHit,Bullet bulletobj){
         int i=0;
         BulletInfo bullet=new BulletInfo();
         for(i=0;i<bulletmapfriend.size();i++){
-            System.out.println(bulletmapfriend.get(i).bullet);
-            if(bulletmapfriend.get(i).bullet.equals(bulletobj)||bulletmapfriend.get(i).hashCode() == (bulletobj.hashCode())){
+            if(bulletmapfriend.get(i).bullet.equals(bulletobj)/*||bulletmapfriend.get(i).hashCode() == (bulletobj.hashCode())*/){
                 bulletmapfriend.get(i).ishit=isHit;
                 break;
             }
         }
-        bullet=deepcopy(bulletmapfriend.get(i));
-        bulletdatafriend.add(bullet);
+        //bullet=deepcopy(bulletmapfriend.get(i));
+        System.out.println(bulletmapfriend.get(i));
+        bulletdatafriend.add(bulletmapfriend.get(i));
         bulletmapfriend.remove(i);
     }
     public List<BulletInfo> returnbulletmap(){
@@ -200,6 +203,8 @@ public class BulletMapping
         return bulletmapfriend;
     }
     public List<BulletInfo> returnbulletdata(){
+        
+
         return bulletdata;
     }
     public List<BulletInfo> returnbulletdatafriend(){
