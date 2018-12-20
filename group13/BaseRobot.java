@@ -38,12 +38,16 @@ public class BaseRobot extends TeamRobot
 	
 	public BulletMapping bulletmapping = new BulletMapping(my);
 	
+	public Gun gun = new Gun(this, my, enemyMap, bulletmapping);
+
 	public void run() {
 		// Initialization of the robot should be put here
 
 		setBodyColor(Color.white);
 		setGunColor(Color.white);
 		setRadarColor(Color.white);
+		setBulletColor(Color.cyan);
+		setScanColor(Color.cyan);
 		initRound();
 
 		// setColors(Color.red,Color.blue,Color.green); // body,gun,radar
@@ -58,7 +62,9 @@ public class BaseRobot extends TeamRobot
 		if(!isTeammate(e.getName()) ){
 			enemy = new Enemy(my, e); 
 			Enemy prevEnemy = enemyMap.get(enemy.name);
-			//bulletmapping.ShootObservation(enemy, prevEnemy);
+			if(prevEnemy != null)enemy.setPrev(prevEnemy);
+			
+			bulletmapping.ShootObservation(enemy, prevEnemy);
             enemyDataManager.ScannedRobot(enemy); //update enemy's info
             broadcastMessage(enemy);
 		}
@@ -97,10 +103,6 @@ public class BaseRobot extends TeamRobot
         my.heat = getGunHeat();
         broadcastMessage(my);
 	}
-	
-	public void onHitByBullet(HitByBulletEvent e){
-			bulletmapping.BulletHittedbyEnemy(e.getName());
-	}
 
 	public void onHitWall(HitWallEvent e) {
 		// Replace the next line with any behavior you would like
@@ -123,8 +125,25 @@ public class BaseRobot extends TeamRobot
 			MyRobot mate = (MyRobot)message;
 			mateMap.put(mate.name ,mate);
 		}
-    }
-    
+	}
+	
+	public void onHitByBullet(HitByBulletEvent e){
+		bulletmapping.BulletHittedbyEnemy(e.getName());
+	}
+	
+    public void onBulletHit(BulletHitEvent e){
+		Bullet bulletobj=e.getBullet();
+        bulletmapping.InputBulletDataFriend(true, bulletobj);
+	}
+	public void onBulletHitBullet(BulletHitEvent e){//koko false or true you tyousei!!
+		Bullet bulletobj=e.getBullet();
+        bulletmapping.InputBulletDataFriend(false, bulletobj);
+	}
+	public void onBulletMissed(BulletHitEvent e){
+		Bullet bulletobj=e.getBullet();
+        bulletmapping.InputBulletDataFriend(false, bulletobj);
+	}
+
     @Override
     public void broadcastMessage(Serializable s ){
         try {
@@ -138,17 +157,16 @@ public class BaseRobot extends TeamRobot
     public void onPaint(Graphics2D g) {
 		try {
 			//enemyDataManager.onPaint(g);
+			bulletmapping.onPaint(g);
 		} catch (RuntimeException e) {
 			//TODO: handle exception
 		}
 		
-		//Gun heading
         g.setColor(Color.red);
 	    g.drawLine((int)getX(), (int)getY(), 
 	    (int)(Math.sin(getGunHeadingRadians()) * 800 + getX()),(int)(Math.cos(getGunHeadingRadians()) * 800 + getY())
 	    );
 
-		//heading
 	    g.setColor(Color.cyan);
 	    g.drawLine((int)getX(), (int)getY(), 
 	    (int)(Math.sin(getHeadingRadians()) * 800 + getX()),(int)(Math.cos(getHeadingRadians()) * 800 + getY())

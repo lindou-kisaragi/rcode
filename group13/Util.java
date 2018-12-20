@@ -17,7 +17,7 @@ public class Util
         }
         return false;
     }
-    
+
     public static  Point calcPoint(double radians, double distance){
         double x = Math.sin(radians) * distance;
         double y = Math.cos(radians) * distance;

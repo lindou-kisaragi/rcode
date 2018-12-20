@@ -10,8 +10,6 @@ import robocode.*;
 import robocode.util.Utils;
 import robocode.ScannedRobotEvent;
 
-
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.*;
@@ -31,4 +29,5 @@ public class BulletInfo{
     public double myx,myy;
     public int pattern;//1:tousoku 2:toukasoku 3:other
     public boolean ishit;//yosou ga seikai ka
+    public Bullet bullet;//mikata nomi
 }

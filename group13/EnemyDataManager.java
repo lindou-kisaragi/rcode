@@ -30,6 +30,7 @@ public class EnemyDataManager
     public  String sub1;
     public  String sub2;
     public boolean allScanned = false;
+    private boolean writeEnable = true;
 
     public  EnemyDataManager(Map<String, Enemy> eMap){
        enemyMap = eMap;
@@ -52,7 +53,6 @@ public class EnemyDataManager
         }else{
             if(enemyMap.size() == Util.enemies){
                 allScanned = true;
-                System.out.println("allscanned !!!");
             }
             if(prevEnemy.alive){
                 enemy.alive = true;
@@ -60,15 +60,10 @@ public class EnemyDataManager
                 enemy.alive = false;
             }
         }
-        /*if ( prevEnemy != null ) {
-            if ( prevEnemy.time == enemy.time ) {
-                return null;
-            }else if ((enemy.time-prevEnemy.timeStamp) < SCAN_STALE ) {
-                enemy.role = prevEnemy.role;
-                enemy.setPrev(prevEnemy);
-            }*/
         
-        enemyMap.put(enemy.name, enemy);
+        if(writeEnable){
+            enemyMap.put(enemy.name, enemy);
+        }
     }
 
     public void setName(String name) {
@@ -115,14 +110,15 @@ public class EnemyDataManager
         }else{
             return sub1;
         }
-
     }
 
     public void onRobotDeath(RobotDeathEvent e){
         Enemy enemy = enemyMap.get(e.getName());
+        writeEnable = false;
         enemy.alive = false;
         System.out.println("(EnemyDataManager) robot death " + e.getName());
         enemyMap.put(enemy.name, enemy);
+        writeEnable = true;
         log();
         /*
 		if(enemy != null){
