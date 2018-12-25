@@ -37,6 +37,9 @@ public class AntiWall
   	private double radarTurnAmount;
     private double gunTurnAmount;
 
+    public AntiWall(){
+    }
+
     public AntiWall(TeamRobot _robot, MyRobot _my){
         robot = _robot;
         my =_my;
@@ -53,7 +56,7 @@ public class AntiWall
 
     public void onScannedRobot(Enemy enemy){
         lockOn = true;
-        radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading+ enemy.bearing - my.radarHeading);
+        radarTurnAmount = Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.radarHeading);
         gunTurnAmount = prepareFire(my,enemy);
         if(!holdFire)robot.setFire(3);
     }
@@ -66,13 +69,13 @@ public class AntiWall
 		t = calcTimeToReach(my ,enemy, enemy.headingRadians);
 		double postX = postEnemyPositionX(enemy, t);
 		double postY = postEnemyPositionY(enemy, t);
-        double bulletRadian = calcGunTurnRadian(my ,enemy ,t);	
+        //double bulletRadian = calcGunTurnRadian(my ,enemy ,t);	
 
         int aiming = aimingCorner(postX,postY);
         System.out.println("aim at :" + aiming);
         if( WALL_MOVETYPE != 0 && aiming!= -1 && !hitAtCorner(enemy,3,t)){
-             System.out.println("corner: false !!!!!");
-             holdFire = true;
+            System.out.println("corner: false !!!!!");
+            holdFire = true;
         }else{
             holdFire = false;
         }
@@ -80,9 +83,10 @@ public class AntiWall
         double gunTurnAmount;
 		// //decide gun turn amount according to wall's move type
         if(WALL_MOVETYPE==1 || WALL_MOVETYPE==2){
-			gunTurnAmount = Utils.normalRelativeAngleDegrees(Util.pointToDegree(my.x,my.y,postX,postY)- my.gunHeading);
+            gunTurnAmount = Utils.normalRelativeAngleDegrees(Util.pointToDegree(my.x,my.y,postX, postY) - my.gunHeading);
+            //gunTurnAmount = Utils.normalRelativeAngleRadians(Util.pointToRadian(my.x, my.y, postX, postY) - my.headingRadians);
 		}else{
-			gunTurnAmount = Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.gunHeading);
+            gunTurnAmount = Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.gunHeading);
         }
         return gunTurnAmount;
     }
@@ -208,16 +212,6 @@ public class AntiWall
         if(ans1 > ans2) return ans1;
         if(ans2 > ans1) return ans2;
         return 0;
-    }
-
-    public static double calcRadians(double x,double y) {
-        if ( y == 0 ) {
-            return (x > 0) ? Math.PI / 2 : Math.PI / -2;
-        }else if ( y > 0 ) {
-            return Math.atan(x/y);
-        }else {
-            return Math.atan(x/y) - Math.PI;            
-        }
     }
 
     public void onPaint(Graphics2D g, MyRobot my, Enemy enemy){

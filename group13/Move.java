@@ -20,15 +20,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 /**
- * AntiWallMove - a class by (your name here)
+ * Move - a class by (your name here)
  */
-public class AntiWallMove
+public class Move
 {
- 
+    //weight
     protected  double WALL_WEIGHT            = 7000;
-    protected  double WALL_DIM               = 1.7;
-    protected  double ENEMY_WEIGHT           = 5000;
-    protected  double ENEMY_DIM              = 1.5;
+    protected  double WALL_DIM               = 2.7;
+    protected  double ENEMY_WEIGHT           = 3000;
+    protected  double ENEMY_DIM              = 2;
     protected  double MATE_WEIGHT            = 5000;
     protected  double MATE_DIM               = 2;
     protected  double BULLET_WEIGHT          = 10000;
@@ -42,10 +42,10 @@ public class AntiWallMove
     private double turnAmount;
     private double aheadAmount;
     public String target;
-    public Enemy targetWall = new Enemy();
+    public Enemy targetRobot = new Enemy();
     Point dst;
 
-    public AntiWallMove( TeamRobot _robot, MyRobot _my,
+    public Move( TeamRobot _robot, MyRobot _my,
          Map<String, Enemy> eMap, Map<String, MyRobot>mMap ){
             robot = _robot;
             my =_my;
@@ -53,28 +53,26 @@ public class AntiWallMove
             mateMap = mMap;
     }
 
-    public void setTarget(String name){
-        target = name;
-        System.out.println("target:" + target);
-        targetWall = enemyMap.get(target);
-        System.out.print("(awMove)" );
-        targetWall.log();
+    public void setTarget(Enemy target){
+        targetRobot = target;
     }
 
     public void execute(){
         goPoint();
     }
 
+    //antiGrabityMove
     public Point setDestination() {
         Point dst = new Point(my.x,my.y);
 
-        //target wall bot
-        if(my.calcDistance(targetWall) > 100)
-        dst.add(Util.getGravity(new Point(my.x ,my.y) , new Point(targetWall.x, targetWall.y), 5000, 2));
+        //target 
+        if(targetRobot != null){
+            dst.add(Util.getGravity(new Point(my.x ,my.y) , new Point(targetRobot.x, targetRobot.y), 5000, 2));
+        }
 
         //dst.diff(Util.getRepulsion(my, new Point(Util.battleFieldWidth/2,Util.battleFieldHeight/2), 10000,WALL_DIM,1));
-
-        //wall
+        
+        //Wall
         dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(Util.battleFieldWidth,my.y), WALL_WEIGHT,WALL_DIM,1));
         dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(0,my.y), WALL_WEIGHT,WALL_DIM,1));
         dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(my.x,Util.battleFieldHeight), WALL_WEIGHT,WALL_DIM,1));
@@ -87,8 +85,11 @@ public class AntiWallMove
         
         //enemies
         for (Map.Entry<String, Enemy> e : enemyMap.entrySet()) {
-            if(!e.getKey().equals(target)) //except target
-            dst.diff(Util.getRepulsion(new Point(my.x, my.y) ,e.getValue(), ENEMY_WEIGHT,ENEMY_DIM,1));
+            if(!e.getKey().equals(target)){ //except target
+                Enemy en = e.getValue();
+                if(en.alive)
+                dst.diff(Util.getRepulsion(new Point(my.x, my.y) ,e.getValue(), ENEMY_WEIGHT,ENEMY_DIM,1));
+            }
         }
         return dst;
     }
@@ -110,7 +111,7 @@ public class AntiWallMove
             aheadAmount = 0;
         }
 
-        System.out.println("(aheadAmount)" + aheadAmount + "(turnTo)" + turnTo);
+        //System.out.println("(aheadAmount)" + aheadAmount + "(turnTo)" + turnTo);
 
         robot.setTurnRightRadians(turnAmount);
         robot.setAhead(aheadAmount);
@@ -134,17 +135,20 @@ public class AntiWallMove
 
     public void log() {
         for(Map.Entry<String, Enemy> entry : enemyMap.entrySet()){
-            System.out.println(" (awMove): "  +entry.getKey() + entry.getValue());
+            System.out.println(" (Move): "  +entry.getKey() + entry.getValue());
         }
     }
 
-    //set destination selected by antigravity 
-    //public Point antiGravMove(){
-    //}
-
     public void onPaint(Graphics2D g){
         g.setColor(Color.green);
+        //destination
         g.drawOval((int)dst.x-5, (int)dst.y-5 ,10,10);
-        g.fillRect((int)targetWall.x,(int)targetWall.y,30,30);
+        
+        try {
+            //target bot's position
+            //g.fillRect((int)targetRobot.x,(int)targetRobot.y,30,30);            
+        } catch (Exception e) {
+            //TODO: handle exception
+        }
     }
 }
