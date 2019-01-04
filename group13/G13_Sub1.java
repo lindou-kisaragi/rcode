@@ -39,9 +39,6 @@ public class G13_Sub1 extends BaseRobot
 	//public MyRobot my = new MyRobot();
 	
 	private double radarTurnAmount;
-
-	public Move move = new Move(this, my, enemyMap, mateMap);
-	//public Gun gun = new Gun(this, my, enemyMap, bulletmapping);
 	
 	public boolean lockon;
 	public String target;
@@ -120,7 +117,5 @@ public class G13_Sub1 extends BaseRobot
 	@Override
 	public void onPaint(Graphics2D g){
 		super.onPaint(g);
-		move.onPaint(g);
-		gun.onPaint(g);
 	}
 }

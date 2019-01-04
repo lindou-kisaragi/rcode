@@ -7,6 +7,7 @@ import group13.MyRobot;
 import group13.Enemy;
 import group13.Util;
 import group13.bulletmap.*;
+import group13.Move;
 
 import robocode.*;
 import robocode.AdvancedRobot;
@@ -46,12 +47,12 @@ public class Gun{
     
     public int aimType = 0;
 
-    public Gun(TeamRobot _robot, MyRobot _my,
+    public Gun(TeamRobot _robot, MyRobot _my, Move move,
         Map<String, Enemy> eMap,BulletMapping bulletMapping) {
             robot = _robot;
             my =_my;
             enemyMap = eMap;
-            bulletmapping = new BulletMapping(my);
+            bulletmapping = new BulletMapping(my, move);
             bulletmapping = bulletMapping;
             estimation=new Estimation(bulletmapping);
     }
@@ -247,8 +248,8 @@ public class Gun{
         g.drawString("Target: " + (int)targetRobot.distance + targetRobot.name, (int)my.x - 60 ,(int)my.y - 60);
         g.setColor(Color.yellow);
 
-        g.drawLine((int)my.x, (int)my.y, (int)nextPoint.x, (int)nextPoint.y);
-        g.drawOval((int)nextPoint.x-5, (int)nextPoint.y-5 ,10,10);
+        //g.drawLine((int)my.x, (int)my.y, (int)nextPoint.x, (int)nextPoint.y);
+        //g.drawOval((int)nextPoint.x-5, (int)nextPoint.y-5 ,10,10);
 
         //predicted points by circle()	
         g.setColor(Color.red);

@@ -45,6 +45,9 @@ public class Move
     public Enemy targetRobot = new Enemy();
     Point dst;
 
+    private int avoidCount;
+    private Point avoidPoint = new Point();
+
     public Move( TeamRobot _robot, MyRobot _my,
          Map<String, Enemy> eMap, Map<String, MyRobot>mMap ){
             robot = _robot;
@@ -59,6 +62,15 @@ public class Move
 
     public void execute(){
         goPoint();
+        avoidCount++;
+    }
+
+    public void setAvoidPoint(){
+        avoidCount = 0;
+        //avoidPoint
+        avoidPoint = new Point(my.x, my.y);
+        avoidPoint.x += 50 * Math.sin(my.calcRadians(targetRobot) + Math.PI/2); 
+        avoidPoint.y += 50 * Math.cos(my.calcRadians(targetRobot) + Math.PI/2); 
     }
 
     //antiGrabityMove
@@ -68,6 +80,10 @@ public class Move
         //target 
         if(targetRobot != null){
             dst.add(Util.getGravity(new Point(my.x ,my.y) , new Point(targetRobot.x, targetRobot.y), 5000, 2));
+            //avoidPoint
+            if(avoidCount <= 5){
+                dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(avoidPoint.x, avoidPoint.y), ENEMY_WEIGHT,ENEMY_DIM,1));  
+            }
         }
 
         //dst.diff(Util.getRepulsion(my, new Point(Util.battleFieldWidth/2,Util.battleFieldHeight/2), 10000,WALL_DIM,1));
@@ -143,7 +159,9 @@ public class Move
         g.setColor(Color.green);
         //destination
         g.drawOval((int)dst.x-5, (int)dst.y-5 ,10,10);
-        
+        g.setColor(Color.cyan);
+        g.drawOval((int)avoidPoint.x-5, (int)avoidPoint.y-5 ,10,10);
+
         try {
             //target bot's position
             //g.fillRect((int)targetRobot.x,(int)targetRobot.y,30,30);            

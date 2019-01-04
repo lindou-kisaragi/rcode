@@ -7,6 +7,7 @@ import group13.Enemy;
 import group13.EnemyDataManager;
 import group13.Util;
 import group13.bulletmap.*;
+import group13.Move;
 
 import robocode.*;
 import robocode.util.Utils;
@@ -28,13 +29,15 @@ import javax.lang.model.util.ElementScanner6;
 public class BulletMapping
 {
     MyRobot my;
+    Move move;
     List<BulletInfo> bulletmap = new ArrayList<BulletInfo>();
     List<BulletInfo> bulletmapfriend = new ArrayList<BulletInfo>();//mikata
     List<BulletInfo> bulletdata = new ArrayList<BulletInfo>();//history
     List<BulletInfo> bulletdatafriend = new ArrayList<BulletInfo>();//history
 
-    public BulletMapping(MyRobot my1){
+    public BulletMapping(MyRobot my1, Move _move){
         my=my1;
+        move = _move;
     }
     //Map<String, Double> bulletmap = new HashMap<String, Double>();
     //bulletmap.put(,);
@@ -57,9 +60,12 @@ public class BulletMapping
             bullet.myx=my.x;
             bullet.myy=my.y;
             bullet.pattern=estimation.EstimationPattern(true);
+            move.setAvoidPoint();
         }
         bulletmap.add(bullet);
     }
+
+    
 
     public void BulletDelete(){//jyouji jikkou hissu!!!
                 //bulletmap.get(i).ishit=false;
@@ -215,8 +221,6 @@ public class BulletMapping
         return bulletmapfriend;
     }
     public List<BulletInfo> returnbulletdata(){
-        
-
         return bulletdata;
     }
     public List<BulletInfo> returnbulletdatafriend(){

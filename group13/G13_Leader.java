@@ -46,9 +46,6 @@ public class G13_Leader extends BaseRobot
 	public boolean targetSet = false;
 	public boolean lockOn;
 	public boolean islastshot = false;
-
-	public Move move = new Move(this, my, enemyMap, mateMap);
-	public Gun gun = new Gun(this, my, enemyMap, bulletmapping);
 	
 	private AntiWall aw = new AntiWall(this, my);
 	public AntiWallMove awMove = new AntiWallMove(this,my,enemyMap,mateMap);
