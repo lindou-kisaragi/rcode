@@ -70,7 +70,7 @@ public class G13_Sub1 extends BaseRobot
 			execute();
 		  }
 	}
-	
+
 	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
 		super.onScannedRobot(e);

@@ -35,7 +35,6 @@ public class Gun{
     
     public static final int AIMTYPE_PINPOINT = 0;
     public static final int AIMTYPE_CONSTANT = 1;
-
     public static final int AIMTYPE_ACCELE = 2;	
     public static final int AIMTYPE_CIRCLE = 3;
 
@@ -45,14 +44,13 @@ public class Gun{
     public Estimation estimation;
 
     
-    int aimType = 0;
+    public int aimType = 0;
 
     public Gun(TeamRobot _robot, MyRobot _my,
         Map<String, Enemy> eMap,BulletMapping bulletMapping) {
             robot = _robot;
             my =_my;
             enemyMap = eMap;
-            bulletmapping = new BulletMapping(my);
             bulletmapping = bulletMapping;
             estimation=new Estimation(bulletmapping);
     }
@@ -65,8 +63,8 @@ public class Gun{
 
     public void execute() {
         if(targetRobot != null){
-        doGunTurn();
         prepareFiring();
+        doGunTurn();
         if(my.heat == 0)dofire();
         }
     }
@@ -94,25 +92,16 @@ public class Gun{
             bullet= robot.setFireBullet(power);
             //if(bullet != null)bulletList.add(bullet);
         }
-        //for(Bullet b:bulletList){	
-          //  System.out.println("b:" + b.hashCode() + "," + b.isActive());	
-            //}	
-            
-            System.out.println("dofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireended");
-            
-            System.out.println("dofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireended");
-            
-            System.out.println("dofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireended");
-        
-            System.out.println("dofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireendeddofireended");
-            if(bullet != null && bullet.hashCode()!=0){bulletmapping.FriendBulletGenerate(power,gunTurnAmount,aimType,bullet);System.out.println(bullet);}
+        if(bullet != null && bullet.hashCode()!=0){bulletmapping.FriendBulletGenerate(power,gunTurnAmount,aimType,bullet);System.out.println(bullet);}
     }	
+
     public void onBulletHit(BulletHitEvent e,boolean ishit) {	
         /*Bullet hitbullet = e.getBullet();*/	
         //get bullet in bulletList that hit enemy by either ways
         Bullet bulletobj=e.getBullet();
         System.out.println(bulletobj);
-		bulletmapping.InputBulletDataFriend(ishit,bulletobj);
+        bulletmapping.InputBulletDataFriend(ishit,bulletobj);
+        
         /*for(Bullet b:bulletList){	
             if(b.equals(hitbullet)){	
             System.out.println("hit!!!!!!!!!!!!!!!!!!!!!!!!!!!" + e.getName());	
@@ -131,17 +120,16 @@ public class Gun{
         if(en.name.contains("Wall")){
             amount = antiWall.prepareFire(my, en) * Math.PI / 360;
         }else{
-        nextPoint = setNextPoint();
-        amount = Util.calcTurnRadians(my.gunHeadingRadians, my.calcRadians(nextPoint));
+            nextPoint = setNextPoint();
+            amount = Util.calcTurnRadians(my.gunHeadingRadians, my.calcRadians(nextPoint));
         }
-        
+
         return amount;
     }
 
     public Point setNextPoint(){
         aimType = setNextAimType();
         System.out.println(aimType);
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         
         Point p = new Point();
         switch (aimType) {
@@ -154,18 +142,20 @@ public class Gun{
             case AIMTYPE_CIRCLE:
                 p = circle();
                 break;
+            case AIMTYPE_ACCELE:
+                p = accele();
+                break;
             default:
                 p = pinpoint();
                 break;
         }
-
         return p;
     }
 
     public int setNextAimType() {
         // decide aimtype using softmax.....
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         aimType = estimation.EstimationPattern(false);
+        //aimType = AIMTYPE_CIRCLE;
         return aimType;
     }
 
@@ -174,14 +164,19 @@ public class Gun{
     }
 
     public Point constant(){
+        Point p = new Point(targetRobot.x, targetRobot.y);
         double t = calcTimeToReach(my, targetRobot, targetRobot.velocity, 2.5);
-        double x = targetRobot.x + targetRobot.velocity*Math.sin(targetRobot.headingRadians)*t;
-        double y = targetRobot.y + targetRobot.velocity*Math.cos(targetRobot.headingRadians)*t;
-        return new Point(x,y);
+        p.x = targetRobot.x + targetRobot.velocity*Math.sin(targetRobot.headingRadians)*t;
+        p.y = targetRobot.y + targetRobot.velocity*Math.cos(targetRobot.headingRadians)*t;
+
+        if(Util.outOfBattleField(p)){	
+            p.x = Math.min(Math.max(18.0, p.x), Util.battleFieldWidth - 18.0);	
+            p.y = Math.min(Math.max(18.0, p.y), Util.battleFieldHeight - 18.0);	
+        }	
+        return p;
     }
 
-    public  double calcTimeToReach
-    ( MyRobot my, Enemy en, double v, double p){
+    public  double calcTimeToReach( MyRobot my, Enemy en, double v, double p){
         double t; //time to reach bullet to enemy(including turning gun)
         double s = Util.bulletSpeed(p);
         t = Util.solveEquation((v*v - s*s),
@@ -189,50 +184,83 @@ public class Gun{
         (en.x-my.x)*(en.x-my.x)+(en.y-my.y)*(en.y-my.y) );
         return t;
     }
+
+    List<Point> pa = new ArrayList<Point>();
+    public Point accele(){
+        Point p = new Point(targetRobot.x, targetRobot.y);
+        int deltaTime = 0;	
+        double v = targetRobot.velocity;
+        pa.clear();
+        while((++deltaTime) * Util.bulletSpeed(power)<	my.calcDistance(p)){	
+            p.x += Math.sin(targetRobot.headingRadians) * v;	
+            p.y += Math.cos(targetRobot.headingRadians) * v;	
+            //System.out.println(("gun v:" + v));
+            pa.add(p);
+            if(v > -8 && v < 8){
+                v += enemySpeedChange;
+                if(v > 8)v=8;
+                if(v < -8)v=-8;
+            }
+            if(Util.outOfBattleField(p)){	
+                p.x = Math.min(Math.max(18.0, p.x), Util.battleFieldWidth - 18.0);	
+                p.y = Math.min(Math.max(18.0, p.y), Util.battleFieldHeight - 18.0);	
+                break;	
+            }	
+        }	
+        return p;
+    }
+
     List<Point> ps = new ArrayList<Point>();
     public Point circle(){	
         double enemyHeading = targetRobot.headingRadians;	
         Point p = new Point(targetRobot.x, targetRobot.y);	
         int deltaTime = 0;	
         ps.clear();	
-        while((++deltaTime) * Util.bulletSpeed(power)<	
-        my.calcDistance(p)){	
-        p.x += Math.sin(enemyHeading) * targetRobot.velocity;	
-        p.y += Math.cos(enemyHeading) * targetRobot.velocity;	
-        ps.add(new Point(p.x, p.y));	
-        enemyHeading += enemyHeadingChange;	
-        if(Util.outOfBattleField(p)){	
-        p.x = Math.min(Math.max(18.0, p.x), Util.battleFieldWidth - 18.0);	
-        p.y = Math.min(Math.max(18.0, p.y), Util.battleFieldHeight - 18.0);	
-        break;	
-        }	
+        while((++deltaTime) * Util.bulletSpeed(power)<	my.calcDistance(p)){	
+            p.x += Math.sin(enemyHeading) * targetRobot.velocity;	
+            p.y += Math.cos(enemyHeading) * targetRobot.velocity;
+            ps.add(new Point(p.x, p.y));	
+            enemyHeading += enemyHeadingChange;	
+            if(Util.outOfBattleField(p)){	
+                p.x = Math.min(Math.max(18.0, p.x), Util.battleFieldWidth - 18.0);	
+                p.y = Math.min(Math.max(18.0, p.y), Util.battleFieldHeight - 18.0);	
+                break;	
+            }	
         }	
         return p;	
-        }	
-        double enemyHeadingChange;	
-        double oldEnemyHeading;	
-        private void prepareFiring(){	
-        enemyHeadingChange = targetRobot.headingRadians - oldEnemyHeading;	
-        System.out.println("(Gun)" +enemyHeadingChange);	
-        oldEnemyHeading = targetRobot.headingRadians;	
-        }	
+    }	
+    
+    double enemyHeadingChange;
+    double enemySpeedChange;
+    private void prepareFiring(){
+        enemyHeadingChange = targetRobot.headingRadians - targetRobot.prevHeadingRadians;	
+        enemySpeedChange = targetRobot.velocity - targetRobot.prevVelocity;
+        
+        System.out.println("(Gun headingChange)" +enemyHeadingChange);
+        System.out.println("(Gun speedChange)" + enemySpeedChange);
+    }
         
     public void onPaint(Graphics2D g) {
         g.setColor(Color.white);
         if(targetRobot!=null)
         g.drawString("Target: " + (int)targetRobot.distance + targetRobot.name, (int)my.x - 60 ,(int)my.y - 60);
-        g.setColor(Color.pink);
+        g.setColor(Color.yellow);
+
+        g.drawLine((int)my.x, (int)my.y, (int)nextPoint.x, (int)nextPoint.y);
         g.drawOval((int)nextPoint.x-5, (int)nextPoint.y-5 ,10,10);
+
         //predicted points by circle()	
-        /*	
-        for(Point p: ps){	
+        g.setColor(Color.red);
+        for(Point p: pa){	
         //g.drawString("" + (int)ps.size(),(int)p.x-5, (int)p.y-5);	
         g.drawOval((int)p.x-5, (int)p.y-5 ,10,10);	
-        }*/	
-        //bullet fired by this robot	
+        }
+
+        //bullet fired by this robot
+        /*	
         for(BulletInfo b:bulletmapping.returnbulletdata()){	
             if(b.bullet.isActive())	
                 g.drawOval((int)b.bullet.getX()-5, (int)b.bullet.getY()-5 ,10,10);	
-        }
+        }*/
     }
 }

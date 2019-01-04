@@ -15,9 +15,10 @@ public class Enemy extends RobotInfo
     public double bearing;
     public double distance;
     public boolean scanned;
+    public double prevVelocity;
+    public double prevHeadingRadians;
 
     public Enemy(){
-
     }
 
     public Enemy(RobotInfo my, ScannedRobotEvent e) {
@@ -43,6 +44,11 @@ public class Enemy extends RobotInfo
         this.scanned = true;
         this.role   = ROLE_UNKNOWN;
         this.heat = 0;
+    }
+
+    public void setPrev(Enemy e){
+        this.prevVelocity = e.velocity;
+        this.prevHeadingRadians = e.headingRadians;
     }
 
     public void log() {

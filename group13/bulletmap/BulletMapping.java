@@ -13,10 +13,10 @@ import robocode.util.Utils;
 import robocode.ScannedRobotEvent;
 
 
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.*;
+import java.io.Serializable;
 import java.lang.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,15 +26,18 @@ import java.util.Map;
 
 import javax.lang.model.util.ElementScanner6;
 //mikata bullet mijissou. tama meityuu 
-public class BulletMapping
+public class BulletMapping// implements Serializable
 {
     MyRobot my;
-    List<BulletInfo> bulletmap = new ArrayList<BulletInfo>();
-    List<BulletInfo> bulletmapfriend = new ArrayList<BulletInfo>();//mikata
+    TeamRobot robot;
+    public List<BulletInfo> bulletmap = new ArrayList<BulletInfo>();
+    public List<BulletInfo> bulletmapfriend = new ArrayList<BulletInfo>();//mikata
     List<BulletInfo> bulletdata = new ArrayList<BulletInfo>();//history
     List<BulletInfo> bulletdatafriend = new ArrayList<BulletInfo>();//history
-    public BulletMapping(MyRobot my1){
+
+    public BulletMapping(MyRobot my1,TeamRobot _robot){
         my=my1;
+        robot=_robot;
     }
     //Map<String, Double> bulletmap = new HashMap<String, Double>();
     //bulletmap.put(,);
@@ -58,14 +61,21 @@ public class BulletMapping
             bullet.myy=my.y;
             bullet.pattern=estimation.EstimationPattern(true);
         }
-        bulletmap.add(bullet);
+        try {
+            robot.broadcastMessage(bullet);
+            }
+            catch (IOException e) {
+                System.out.println("message miss");
+            }
     }
+
     public void BulletDelete(){//jyouji jikkou hissu!!!
                 //bulletmap.get(i).ishit=false;
                 //BulletInfo bullet=new BulletInfo();
                 //bullet=deepcopy(bulletmap.get(i));
                 //bulletmap.remove(i);
     }
+
     public double BulletRadiusShort(int i){
         return (bulletmap.get(i).speed*(my.time-bulletmap.get(i).t));
     }
@@ -75,9 +85,10 @@ public class BulletMapping
     public double Distance(int i){
         return Math.pow(Math.pow(bulletmap.get(i).x-my.x,2)+Math.pow(bulletmap.get(i).x-my.x,2), 0.5);
     }
+
     public void FriendBulletGenerate(double power,double gunTurnAmount,int pattern,Bullet bulletobj){
         System.out.println("generate!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-        System.out.println(bulletobj);
+        //System.out.println(bulletobj);
         BulletInfo bullet=new BulletInfo();
         bullet.prex=my.x;
         bullet.prey=my.y;
@@ -91,9 +102,15 @@ public class BulletMapping
         bullet.angle1=gunTurnAmount;
         bullet.angle2=gunTurnAmount;
         bullet.bullet=bulletobj;
-        bulletmapfriend.add(bullet);
-        System.out.println(bulletobj);
+        try {
+            robot.broadcastMessage(bullet);
+            }
+            catch (IOException e) {
+                System.out.println("message miss");
+            }
+        //System.out.println(bulletobj);
     }
+
     public void FriendBulletMove(int i){//atode setuzoku//jyouji jikkou!!!!!
         double x,y,speed,power,t,t2,xnow,ynow,directionx,directiony,gunTurnAmount;//x,y ga hassya iti, t ga hassya jikoku, t2 ga genzai
         x=bulletmapfriend.get(i).x;
@@ -107,6 +124,7 @@ public class BulletMapping
         xnow=x+(t2-t)*speed*directionx;
         ynow=y+(t2-t)*speed*directiony;
     }
+
     @SuppressWarnings("unchecked")
     public static <T> T deepcopy(T obj) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -117,6 +135,7 @@ public class BulletMapping
             return null;
         }
     }
+
     public Double CalculateAngle1(BulletInfo bullet){//kakudo gyaku kamo
         double k,X,Y;
         k=((bullet.myx-bullet.prex)*(bullet.prex-my.x)+(bullet.myy-bullet.prey)*(bullet.prey-my.y))
@@ -139,6 +158,7 @@ public class BulletMapping
             }
         }
     }
+
     public Double CalculateAngle2(BulletInfo bullet){
         double k,X,Y;
         k=((bullet.myx-bullet.x)*(bullet.x-my.x)+(bullet.myy-bullet.y)*(bullet.y-my.y))
@@ -161,6 +181,7 @@ public class BulletMapping
             }
         }
     }
+
     public void BulletHittedbyEnemy(String enemyname){
         BulletInfo bullet=new BulletInfo();
         int j=0;
@@ -182,20 +203,25 @@ public class BulletMapping
         bulletdata.add(bulletmap.get(j));
         bulletmap.remove(j);
     }
+
     public void InputBulletDataFriend(boolean isHit,Bullet bulletobj){
-        int i=0;
+        int i=0,j=0;
         BulletInfo bullet=new BulletInfo();
         for(i=0;i<bulletmapfriend.size();i++){
             if(bulletmapfriend.get(i).bullet.equals(bulletobj)/*||bulletmapfriend.get(i).hashCode() == (bulletobj.hashCode())*/){
                 bulletmapfriend.get(i).ishit=isHit;
+                j=1;
                 break;
             }
         }
         //bullet=deepcopy(bulletmapfriend.get(i));
-        System.out.println(bulletmapfriend.get(i));
-        bulletdatafriend.add(bulletmapfriend.get(i));
-        bulletmapfriend.remove(i);
+        //System.out.println(bulletmapfriend.get(i));
+        if(bulletmapfriend.size() != 0 && j==1){
+            bulletdatafriend.add(bulletmapfriend.get(i));
+            bulletmapfriend.remove(i);
+        }
     }
+
     public List<BulletInfo> returnbulletmap(){
         return bulletmap;
     }
@@ -210,5 +236,17 @@ public class BulletMapping
     public List<BulletInfo> returnbulletdatafriend(){
         return bulletdatafriend;
     }
+
+    public void onPaint(Graphics2D g){
+        g.setColor(Color.pink);
+        
+        for(BulletInfo b:bulletmapfriend){
+            Bullet bullet = b.bullet;
+            if(bullet.isActive())	
+                g.drawOval((int)bullet.getX()-5, (int)bullet.getY()-5 ,10,10);	        
+        }
+    }
+
+    
 }
 

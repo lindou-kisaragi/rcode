@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
-
 // API help : http://robocode.sourceforge.net/docs/robocode/robocode/Robot.html
 
 /**
@@ -38,8 +36,7 @@ public class BaseRobot extends TeamRobot
 	public Map<String, MyRobot> mateMap = new HashMap<>();
 	public MyRobot my = new MyRobot();
 	
-	public BulletMapping bulletmapping = new BulletMapping(my);
-	
+	public BulletMapping bulletmapping = new BulletMapping(my,this);
 	
 	public Gun gun = new Gun(this, my, enemyMap, bulletmapping);
 
@@ -65,6 +62,8 @@ public class BaseRobot extends TeamRobot
 		if(!isTeammate(e.getName()) ){
 			enemy = new Enemy(my, e); 
 			Enemy prevEnemy = enemyMap.get(enemy.name);
+			if(prevEnemy != null)enemy.setPrev(prevEnemy);
+			
 			bulletmapping.ShootObservation(enemy, prevEnemy);
             enemyDataManager.ScannedRobot(enemy); //update enemy's info
             broadcastMessage(enemy);
@@ -102,11 +101,8 @@ public class BaseRobot extends TeamRobot
 		my.velocity = getVelocity();
 		my.energy = getEnergy();
         my.heat = getGunHeat();
-        broadcastMessage(my);
-	}
-	
-	public void onHitByBullet(HitByBulletEvent e){
-			bulletmapping.BulletHittedbyEnemy(e.getName());
+		broadcastMessage(my);
+		//broadcastMessage(bulletmapping);
 	}
 
 	public void onHitWall(HitWallEvent e) {
@@ -129,17 +125,35 @@ public class BaseRobot extends TeamRobot
 		}else if(message instanceof MyRobot){
 			MyRobot mate = (MyRobot)message;
 			mateMap.put(mate.name ,mate);
+		}else if(message instanceof BulletInfo ){
+            BulletInfo bulletm = (BulletInfo)message;
+            if(bulletm!=null){
+                if(bulletm.bullet!=null){
+                    bulletmapping.bulletmapfriend.add(bulletm);
+                }else{
+                    bulletmapping.bulletmap.add(bulletm);
+                }
+            } 
 		}
-    }
-    public void onBulletHit(BulletHitEvent e){
-		gun.onBulletHit(e,true);
 	}
-    public void onBulletHitBullet(BulletHitEvent e){//koko false or true you tyousei!!
-		gun.onBulletHit(e,false);
+	
+	public void onHitByBullet(HitByBulletEvent e){
+		bulletmapping.BulletHittedbyEnemy(e.getName());
+	}
+	
+    public void onBulletHit(BulletHitEvent e){
+		Bullet bulletobj=e.getBullet();
+        bulletmapping.InputBulletDataFriend(true, bulletobj);
+	}
+	public void onBulletHitBullet(BulletHitEvent e){//koko false or true you tyousei!!
+		Bullet bulletobj=e.getBullet();
+        bulletmapping.InputBulletDataFriend(false, bulletobj);
 	}
 	public void onBulletMissed(BulletHitEvent e){
-		gun.onBulletHit(e,false);
-	}	
+		Bullet bulletobj=e.getBullet();
+        bulletmapping.InputBulletDataFriend(false, bulletobj);
+	}
+
     @Override
     public void broadcastMessage(Serializable s ){
         try {
@@ -153,6 +167,7 @@ public class BaseRobot extends TeamRobot
     public void onPaint(Graphics2D g) {
 		try {
 			//enemyDataManager.onPaint(g);
+			bulletmapping.onPaint(g);
 		} catch (RuntimeException e) {
 			//TODO: handle exception
 		}

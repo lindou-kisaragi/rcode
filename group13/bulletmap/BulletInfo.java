@@ -10,8 +10,6 @@ import robocode.*;
 import robocode.util.Utils;
 import robocode.ScannedRobotEvent;
 
-
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.*;
@@ -22,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BulletInfo{
+public class BulletInfo implements Serializable{
     public String name;
     public double speed;
     public double angle1,angle2;//atarumade wakaranai//angle1 to angle2 ha gosa wo shimesu.//radian!!
