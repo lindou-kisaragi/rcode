@@ -38,7 +38,7 @@ public class BaseRobot extends TeamRobot
 	
 	
 	public Move move = new Move(this, my, enemyMap, mateMap);
-	public BulletMapping bulletmapping = new BulletMapping(my, move);
+	public BulletMapping bulletmapping = new BulletMapping(my, move,this);
 	public Gun gun = new Gun(this, my, move, enemyMap, bulletmapping);
 
 	public void run() {
@@ -102,7 +102,8 @@ public class BaseRobot extends TeamRobot
 		my.velocity = getVelocity();
 		my.energy = getEnergy();
         my.heat = getGunHeat();
-        broadcastMessage(my);
+		broadcastMessage(my);
+		//broadcastMessage(bulletmapping);
 	}
 
 	public void onHitWall(HitWallEvent e) {
@@ -125,6 +126,15 @@ public class BaseRobot extends TeamRobot
 		}else if(message instanceof MyRobot){
 			MyRobot mate = (MyRobot)message;
 			mateMap.put(mate.name ,mate);
+		}else if(message instanceof BulletInfo ){
+            BulletInfo bulletm = (BulletInfo)message;
+            if(bulletm!=null){
+                if(bulletm.bullet!=null){
+                    bulletmapping.bulletmapfriend.add(bulletm);
+                }else{
+                    bulletmapping.bulletmap.add(bulletm);
+                }
+            } 
 		}
 	}
 	
@@ -158,8 +168,6 @@ public class BaseRobot extends TeamRobot
     public void onPaint(Graphics2D g) {
 		try {
 			//enemyDataManager.onPaint(g);
-			move.onPaint(g);
-			gun.onPaint(g);
 			bulletmapping.onPaint(g);
 		} catch (RuntimeException e) {
 			//TODO: handle exception

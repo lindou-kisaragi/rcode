@@ -52,7 +52,7 @@ public class Gun{
             robot = _robot;
             my =_my;
             enemyMap = eMap;
-            bulletmapping = new BulletMapping(my, move);
+            bulletmapping = new BulletMapping(my, move, _robot);
             bulletmapping = bulletMapping;
             estimation=new Estimation(bulletmapping);
     }

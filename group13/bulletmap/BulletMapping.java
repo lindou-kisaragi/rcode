@@ -17,6 +17,7 @@ import robocode.ScannedRobotEvent;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.*;
+import java.io.Serializable;
 import java.lang.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,18 +27,20 @@ import java.util.Map;
 
 import javax.lang.model.util.ElementScanner6;
 //mikata bullet mijissou. tama meityuu 
-public class BulletMapping
+public class BulletMapping// implements Serializable
 {
+    TeamRobot robot;
     MyRobot my;
     Move move;
-    List<BulletInfo> bulletmap = new ArrayList<BulletInfo>();
-    List<BulletInfo> bulletmapfriend = new ArrayList<BulletInfo>();//mikata
+    public List<BulletInfo> bulletmap = new ArrayList<BulletInfo>();
+    public List<BulletInfo> bulletmapfriend = new ArrayList<BulletInfo>();//mikata
     List<BulletInfo> bulletdata = new ArrayList<BulletInfo>();//history
     List<BulletInfo> bulletdatafriend = new ArrayList<BulletInfo>();//history
 
-    public BulletMapping(MyRobot my1, Move _move){
+    public BulletMapping(MyRobot my1, Move _move, TeamRobot _robot){
         my=my1;
         move = _move;
+        robot = _robot;
     }
     //Map<String, Double> bulletmap = new HashMap<String, Double>();
     //bulletmap.put(,);
@@ -62,10 +65,13 @@ public class BulletMapping
             bullet.pattern=estimation.EstimationPattern(true);
             move.setAvoidPoint();
         }
-        bulletmap.add(bullet);
+        try {
+            robot.broadcastMessage(bullet);
+        }
+            catch (IOException e) {
+                System.out.println("message miss");
+        }
     }
-
-    
 
     public void BulletDelete(){//jyouji jikkou hissu!!!
                 //bulletmap.get(i).ishit=false;
@@ -100,6 +106,12 @@ public class BulletMapping
         bullet.angle1=gunTurnAmount;
         bullet.angle2=gunTurnAmount;
         bullet.bullet=bulletobj;
+        try {
+            robot.broadcastMessage(bullet);
+            }
+            catch (IOException e) {
+                System.out.println("message miss");
+            }
         bulletmapfriend.add(bullet);
         //System.out.println(bulletobj);
     }
@@ -198,17 +210,18 @@ public class BulletMapping
     }
 
     public void InputBulletDataFriend(boolean isHit,Bullet bulletobj){
-        int i=0;
+        int i=0,j=0;
         BulletInfo bullet=new BulletInfo();
         for(i=0;i<bulletmapfriend.size();i++){
             if(bulletmapfriend.get(i).bullet.equals(bulletobj)/*||bulletmapfriend.get(i).hashCode() == (bulletobj.hashCode())*/){
                 bulletmapfriend.get(i).ishit=isHit;
+                j=1;
                 break;
             }
         }
         //bullet=deepcopy(bulletmapfriend.get(i));
         //System.out.println(bulletmapfriend.get(i));
-        if(bulletmapfriend.size() != 0){
+        if(bulletmapfriend.size() != 0 && j==1){
             bulletdatafriend.add(bulletmapfriend.get(i));
             bulletmapfriend.remove(i);
         }
@@ -221,6 +234,8 @@ public class BulletMapping
         return bulletmapfriend;
     }
     public List<BulletInfo> returnbulletdata(){
+        
+
         return bulletdata;
     }
     public List<BulletInfo> returnbulletdatafriend(){
@@ -236,5 +251,7 @@ public class BulletMapping
                 g.drawOval((int)bullet.getX()-5, (int)bullet.getY()-5 ,10,10);	        
         }
     }
+
+    
 }
 

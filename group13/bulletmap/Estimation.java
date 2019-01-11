@@ -33,9 +33,14 @@ public class Estimation{
         double x0,x1,x2,x3;//1~pattern kakuritu
         double answer,omikuji;
         x0=Softmax(0, isenemy);
-        x1=Softmax(1, isenemy);
-        x2=Softmax(2, isenemy);
-        x3=Softmax(3, isenemy);
+        x1=Softmax(1, isenemy)+0.05;
+        x2=Softmax(2, isenemy)+0.05;
+        x3=Softmax(3, isenemy)+0.05;
+        
+        System.out.println("x0: " + x0);
+        System.out.println("x1: " + x1);
+        System.out.println("x2: " + x2);
+        System.out.println("x3: " + x3);
         omikuji=Math.random()*(x0+x1+x2+x3);
         if(x0==1000||x0==0)return 0;
         if(x1==1000||x1==0)return 1;
@@ -57,22 +62,19 @@ public class Estimation{
         double alpha=0.1;//keisuu//tyousetu hituyou!!!!!!!!!
         double f;//softmax kansuu
         xa=Sigmoid(pattern, isenemy);
-        x0=Sigmoid(0, isenemy);
+        x0=Sigmoid(0, isenemy)-0.1;
         x1=Sigmoid(1, isenemy);
         x2=Sigmoid(2, isenemy);
         x3=Sigmoid(3, isenemy);
-        System.out.println("x0: " + x0);
-        System.out.println("x1: " + x1);
-        System.out.println("x2: " + x2);
-        System.out.println("x3: " + x3);
-        if(x0==1000||x1==1000||x2==1000||x3==1000)return 1000;
-        f=Math.exp(xa/alpha)/(Math.exp(x0/alpha))+(Math.exp(x1/alpha)+Math.exp(x2/alpha)+Math.exp(x3/alpha));
+        if(pattern==0)xa=xa-0.5;
+        if(x0==1000||x1==1000||x2==1000||x3==1000)return 0.5;
+        f=(double)Math.exp((xa)/alpha)/((Math.exp(x0/alpha))+(Math.exp(x1/alpha)+Math.exp(x2/alpha)+Math.exp(x3/alpha)));
         return f;
     }
     public double Sigmoid(int pattern,boolean isenemy){
         //double x[];//hitotu no pattern no subete no bullet data.0 or 1
         double xa=0;//sigmoid
-        int ishit;
+        double ishit;
         List<BulletInfo> x=new ArrayList<BulletInfo>();
         if(isenemy){
             x=bulletmapping.returnbulletdata();
@@ -83,22 +85,22 @@ public class Estimation{
         //System.out.println("fuuuuuuuuuuuuuuuuuuuuuuuckkkkkkkkkkkkkkkkkkkkkkk");
         //System.out.println(x);
         //try{
-            if(x==null)return 1000;
-            else if( x.size()==0)return 1000;
+            if(x==null)return 1000.0;
+            else if( x.size()==0)return 1000.0;
             else{
                 //System.out.println(x.size());
             for(int i=0;i<x.size();i++){//i ha jikan ni shita houga iikamo.
                 if(x.get(i)==null){
-                    return 1000;
+                    return 1000.0;
                 }
                 if(x.get(i).pattern==pattern){
                     System.out.println(x.get(i).ishit);
                     if(x.get(i).ishit==true){
-                        ishit=1;
+                        ishit=1.0;
                     }else{
-                        ishit=0;
+                        ishit=0.01;
                     }
-                    xa=xa+0.5*ishit*(Math.tanh((x.size()-(double)i+1.5)/7.0)+1.0);//tyousetu hituyou
+                    xa=xa+0.5*ishit*(Math.tanh((x.size()-(double)i+1.5)/7.0)+1.0)+0.1;//tyousetu hituyou
                     //System.out.println(xa);    
                 }
             }   
