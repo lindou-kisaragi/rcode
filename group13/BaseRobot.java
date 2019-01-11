@@ -36,9 +36,10 @@ public class BaseRobot extends TeamRobot
 	public Map<String, MyRobot> mateMap = new HashMap<>();
 	public MyRobot my = new MyRobot();
 	
-	public BulletMapping bulletmapping = new BulletMapping(my,this);
 	
-	public Gun gun = new Gun(this, my, enemyMap, bulletmapping);
+	public Move move = new Move(this, my, enemyMap, mateMap);
+	public BulletMapping bulletmapping = new BulletMapping(my, move);
+	public Gun gun = new Gun(this, my, move, enemyMap, bulletmapping);
 
 	public void run() {
 		// Initialization of the robot should be put here

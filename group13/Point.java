@@ -16,6 +16,11 @@ public class Point implements Serializable{
         this.y = y;
     }
 
+    public void set(Point p){
+        this.x = p.x;
+        this.y = p.y;
+    }
+
     public Point add(Point p) {
         this.x += p.x;
         this.y += p.y;

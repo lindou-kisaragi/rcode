@@ -7,6 +7,7 @@ import group13.Enemy;
 import group13.EnemyDataManager;
 import group13.Util;
 import group13.bulletmap.*;
+import group13.Move;
 
 import robocode.*;
 import robocode.util.Utils;
@@ -29,15 +30,15 @@ import javax.lang.model.util.ElementScanner6;
 public class BulletMapping// implements Serializable
 {
     MyRobot my;
-    TeamRobot robot;
-    public List<BulletInfo> bulletmap = new ArrayList<BulletInfo>();
-    public List<BulletInfo> bulletmapfriend = new ArrayList<BulletInfo>();//mikata
+    Move move;
+    List<BulletInfo> bulletmap = new ArrayList<BulletInfo>();
+    List<BulletInfo> bulletmapfriend = new ArrayList<BulletInfo>();//mikata
     List<BulletInfo> bulletdata = new ArrayList<BulletInfo>();//history
     List<BulletInfo> bulletdatafriend = new ArrayList<BulletInfo>();//history
 
-    public BulletMapping(MyRobot my1,TeamRobot _robot){
+    public BulletMapping(MyRobot my1, Move _move){
         my=my1;
-        robot=_robot;
+        move = _move;
     }
     //Map<String, Double> bulletmap = new HashMap<String, Double>();
     //bulletmap.put(,);
@@ -60,6 +61,7 @@ public class BulletMapping// implements Serializable
             bullet.myx=my.x;
             bullet.myy=my.y;
             bullet.pattern=estimation.EstimationPattern(true);
+            move.setAvoidPoint();
         }
         try {
             robot.broadcastMessage(bullet);
@@ -108,6 +110,7 @@ public class BulletMapping// implements Serializable
             catch (IOException e) {
                 System.out.println("message miss");
             }
+        bulletmapfriend.add(bullet);
         //System.out.println(bulletobj);
     }
 
