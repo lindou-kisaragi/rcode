@@ -26,13 +26,13 @@ public class Move
 {
     //weight
     protected  double WALL_WEIGHT            = 7000;
-    protected  double WALL_DIM               = 2.7;
+    protected  double WALL_DIM               = 2.3;
     protected  double ENEMY_WEIGHT           = 3000;
     protected  double ENEMY_DIM              = 2;
     protected  double MATE_WEIGHT            = 5000;
     protected  double MATE_DIM               = 2;
     protected  double BULLET_WEIGHT          = 10000;
-    protected  double BULLET_DIM = 4;
+    protected  double BULLET_DIM = 3;
 
     public  Map<String, Enemy> enemyMap = new HashMap<>(); 
     public  Map<String, MyRobot> mateMap = new HashMap<>(); 
@@ -82,7 +82,7 @@ public class Move
             dst.add(Util.getGravity(new Point(my.x ,my.y) , new Point(targetRobot.x, targetRobot.y), 5000, 2));
             //avoidPoint
             if(avoidCount <= 5){
-                dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(avoidPoint.x, avoidPoint.y), ENEMY_WEIGHT,ENEMY_DIM,1));  
+                dst.diff(Util.getRepulsion(new Point(my.x, my.y), new Point(avoidPoint.x, avoidPoint.y), BULLET_WEIGHT,BULLET_DIM,1));  
             }
         }
 

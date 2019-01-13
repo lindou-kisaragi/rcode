@@ -52,7 +52,7 @@ public class Gun{
             robot = _robot;
             my =_my;
             enemyMap = eMap;
-            bulletmapping = new BulletMapping(my, move, _robot);
+            //bulletmapping = new BulletMapping(my, move, _robot);
             bulletmapping = bulletMapping;
             estimation=new Estimation(bulletmapping);
     }
@@ -79,7 +79,9 @@ public class Gun{
     //List<Bullet> bulletList = new ArrayList<Bullet>();
     public void dofire(){
         //for Wall bot
-        Bullet bullet=new Bullet(0,0,0,0,null,null,true,0);
+        //Bullet bullet=new Bullet(0,0,0,0,null,null,true,0);
+        Bullet bullet=null;
+
         if(targetRobot.name.contains("Wall")){
             if(!antiWall.holdFire){
                 bullet = robot.setFireBullet(3);
@@ -167,7 +169,7 @@ public class Gun{
 
     public Point constant(){
         Point p = new Point(targetRobot.x, targetRobot.y);
-        double t = calcTimeToReach(my, targetRobot, targetRobot.velocity, 2.5);
+        double t = calcTimeToReach(my, targetRobot, targetRobot.velocity, power);
         p.x = targetRobot.x + targetRobot.velocity*Math.sin(targetRobot.headingRadians)*t;
         p.y = targetRobot.y + targetRobot.velocity*Math.cos(targetRobot.headingRadians)*t;
 

@@ -47,32 +47,20 @@ public class G13_Leader extends BaseRobot
 	public boolean lockOn;
 	public boolean islastshot = false;
 	
-	private AntiWall aw = new AntiWall(this, my);
-	public AntiWallMove awMove = new AntiWallMove(this,my,enemyMap,mateMap);
-	
 	@Override
 	public void run() {
 		super.run();
 		// Robot main loop
 		while(true) {
-		if(!lockOn){
-			radarTurnAmount = 90;
-		}
-		  lockOn = false;
-
 		  updateMyInfo();
-
-		  move.execute();
-		  gun.execute();
-		  //aw.execute();
 
 		System.out.println(" ");
 		System.out.println("time:" + getTime());
 		System.out.println("target :" + target);
 
-		  setTurnRadarRight(radarTurnAmount);
-
-		  setMaxVelocity(8);
+		  radar.execute();
+		  move.execute();
+		  gun.execute();
 		  execute();
 		}
 	}
@@ -82,24 +70,22 @@ public class G13_Leader extends BaseRobot
 		super.onScannedRobot(e);
 
 		if(!isTeammate(e.getName()) ){
-			enemy = new Enemy(my, e); 
 
 			//antiWall !!
 			if(!targetSet && e.getName().contains("Wall")){
 				target = enemy.name;
 				targetSet = true;
 				//aw.onScannedRobot(enemy);
+				radar.setTarget(enemy);
 				move.setTarget(enemy);
 				gun.setTarget(enemy);
 				islastshot = Util.isLastShot(3,enemy.energy);
 			}else if(targetSet && target.equals(enemy.name)){
+				radar.setTarget(enemy);
 				move.setTarget(enemy);
 				gun.setTarget(enemy);
-				lockOn = true;
-				radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.radarHeading);
 			}
 		}
-
 	}
 
 	public void setTarget(){
@@ -117,19 +103,14 @@ public class G13_Leader extends BaseRobot
 		if(target.equals(e.getName())){
 			targetSet = false;
 		}
+		
 		if(!enemyDataManager.wallsAlive()){
 			setTarget();
-		}		
+		}
 	}
 
 	// Paint a transparent square on top of the last scanned robot
     public void onPaint(Graphics2D g) {
 		super.onPaint(g);
-		try {
-			aw.onPaint(g,my,enemy);		
-			awMove.onPaint(g);
-		} catch (RuntimeException e) {
-			//TODO: handle exception
-		}
 	}
 }

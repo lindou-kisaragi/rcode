@@ -31,14 +31,14 @@ import java.util.Map;
 public class BaseRobot extends TeamRobot
 {
 	public Enemy enemy;
-	public  Map<String, Enemy> enemyMap = new HashMap<>(); 
+	public Map<String, Enemy> enemyMap = new HashMap<>(); 
 	public EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
 	public Map<String, MyRobot> mateMap = new HashMap<>();
 	public MyRobot my = new MyRobot();
 	
-	
+	public Radar radar = new Radar(this, my, enemyMap);
 	public Move move = new Move(this, my, enemyMap, mateMap);
-	public BulletMapping bulletmapping = new BulletMapping(my, move,this);
+	public BulletMapping bulletmapping = new BulletMapping(my, move, this);
 	public Gun gun = new Gun(this, my, move, enemyMap, bulletmapping);
 
 	public void run() {
@@ -80,12 +80,14 @@ public class BaseRobot extends TeamRobot
         }
 
 		String[] teammates = getTeammates();
+		int teammates_num = 0;
 		if (teammates != null){
 			for (String member : teammates){
 				mateMap.put(member, new MyRobot());
 			}
+			teammates_num = teammates.length;
 		}
-		Util.enemies = getOthers() - 2;
+		Util.enemies = getOthers() - teammates_num;
 		Util.battleFieldWidth = getBattleFieldWidth();
 		Util.battleFieldHeight = getBattleFieldHeight();
 	}
@@ -168,7 +170,9 @@ public class BaseRobot extends TeamRobot
     public void onPaint(Graphics2D g) {
 		try {
 			//enemyDataManager.onPaint(g);
-			bulletmapping.onPaint(g);
+			move.onPaint(g);
+			//gun.onPaint(g);
+			//bulletmapping.onPaint(g);
 		} catch (RuntimeException e) {
 			//TODO: handle exception
 		}

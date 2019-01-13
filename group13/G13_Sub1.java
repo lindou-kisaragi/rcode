@@ -33,35 +33,33 @@ public class G13_Sub1 extends BaseRobot
 {
 	/*super class's variable you can use*/
 	//public Enemy enemy;
-	//public  Map<String, Enemy> enemyMap = new HashMap<>(); 
+	//public Map<String, Enemy> enemyMap = new HashMap<>(); 
 	//public EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
 	//public Map<String, MyRobot> mateMap = new HashMap<>();
 	//public MyRobot my = new MyRobot();
-	
-	private double radarTurnAmount;
+	//public Radar radar = new Radar(this, my, enemyMap);
+	//public Move move = new Move(this, my, enemyMap, mateMap);
+	//public BulletMapping bulletmapping = new BulletMapping(my, move, this);
+	//public Gun gun = new Gun(this, my, move, enemyMap, bulletmapping);
 	
 	public boolean lockon;
 	public String target;
 	public boolean targetSet = false;
-
 	private boolean running = true;
+
 	@Override
     public void run() {
 		super.run();
+
 		// Robot main loop
 		while(running) {
-			if(!lockon){
-				radarTurnAmount = 90;
-			}
-
 			System.out.println(" ");
 			System.out.println("time:" + getTime());
 			System.out.println("target :" + target);
 			
 			super.updateMyInfo();
-			setTurnRadarRight(radarTurnAmount);
-			lockon = false;
 
+			radar.execute();
 			move.execute();
 			gun.execute();
 			execute();
@@ -79,10 +77,9 @@ public class G13_Sub1 extends BaseRobot
 
 			if(targetSet && target.equals(enemy.name)){
 				System.out.println("lockon!!!!!!!!");
+				radar.setTarget(enemy);
 				move.setTarget(enemy);
 				gun.setTarget(enemy);
-				lockon = true;
-				radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.radarHeading);
 			}
 		}
 	}
@@ -95,12 +92,6 @@ public class G13_Sub1 extends BaseRobot
 		if(target != null){
 			targetSet = true;
 		}
-	}
-	/*
-	public void onBulletHit(BulletHitEvent e){
-		gun.onBulletHit(e);
-	}*/
-	public void searchEnemy(String target) {
 	}
 
 	public void onRobotDeath(RobotDeathEvent e){

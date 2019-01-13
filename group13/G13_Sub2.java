@@ -27,67 +27,66 @@ import java.util.Map;
 // API help : http://robocode.sourceforge.net/docs/robocode/robocode/Robot.html
 
 /**
- * G13_Sub2 - a robot by (your name here)
+ * G13_Sub1 - a robot by (your name here)
  */
 public class G13_Sub2 extends BaseRobot
 {
 	/*super class's variable you can use*/
 	//public Enemy enemy;
-	//public  Map<String, Enemy> enemyMap = new HashMap<>(); 
+	//public Map<String, Enemy> enemyMap = new HashMap<>(); 
 	//public EnemyDataManager  enemyDataManager = new EnemyDataManager(enemyMap);
 	//public Map<String, MyRobot> mateMap = new HashMap<>();
 	//public MyRobot my = new MyRobot();
+	//public Radar radar = new Radar(this, my, enemyMap);
+	//public Move move = new Move(this, my, enemyMap, mateMap);
+	//public BulletMapping bulletmapping = new BulletMapping(my, move, this);
+	//public Gun gun = new Gun(this, my, move, enemyMap, bulletmapping);
 	
-	private double radarTurnAmount;
-
 	public boolean lockon;
 	public String target;
 	public boolean targetSet = false;
+	private boolean running = true;
 
 	@Override
     public void run() {
 		super.run();
-		// Robot main loop
-		while(true) {
-			if(!lockon){
-				radarTurnAmount = 90;
-			}
 
+		// Robot main loop
+		while(running) {
 			System.out.println(" ");
-			System.out.println("target :" + target);
 			System.out.println("time:" + getTime());
+			System.out.println("target :" + target);
 			
 			super.updateMyInfo();
-			setTurnRadarRight(radarTurnAmount);
-			lockon = false;
 
+			radar.execute();
 			move.execute();
 			gun.execute();
 			execute();
 		  }
 	}
-	
+
 	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
 		super.onScannedRobot(e);
-
-
+	
 		if(!isTeammate(e.getName()) ){
 			if(!targetSet && enemyDataManager.allScanned){
 				setTarget();
 			}
+
 			if(targetSet && target.equals(enemy.name)){
 				System.out.println("lockon!!!!!!!!");
+				radar.setTarget(enemy);
 				move.setTarget(enemy);
 				gun.setTarget(enemy);
-				lockon = true;
-				radarTurnAmount = 2 * Utils.normalRelativeAngleDegrees(my.heading + enemy.bearing - my.radarHeading);
 			}
 		}
 	}
 	
 	public void setTarget(){
 		target = enemyDataManager.setTarget();
+		//enemyDataManager.log();
 		System.out.println("target Set!!!!!!!!! " + target);
 
 		if(target != null){
@@ -95,14 +94,15 @@ public class G13_Sub2 extends BaseRobot
 		}
 	}
 
-	public void searchEnemy(String target) {
-	}
-
 	public void onRobotDeath(RobotDeathEvent e){
 		super.onRobotDeath(e);
 		if(!isTeammate(e.getName())){
 			setTarget();
 		}
+	}
+
+	public void onWin(WinEvent e){
+		running = false;
 	}
 	
 	@Override
